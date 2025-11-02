@@ -3,65 +3,71 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aventura do Conhecimento</title>
-    <link rel="stylesheet" href="style.css">
-</head>
+    <title>RPG Quiz Educacional</title>
+    </head>
 <body>
     <div class="container">
-
         <div id="menu-inicial">
-            <h1>Aventura do Conhecimento</h1>
-            <p>Seja bem-vindo(a)! Escolha seu caminho e comece a aprender enquanto se diverte.</p>
-            <button onclick="mostrarSelecao()">COMEÇAR A JOGAR</button>
+            <h1>RPG QUIZ: A Jornada do Conhecimento</h1>
+            <p>Seja bem-vindo(a)! Escolha seu mundo e comece a batalha de inteligência!</p>
+            <button id="btn-comecar" onclick="mostrarSelecao()">COMEÇAR A JOGAR</button>
         </div>
 
         <div id="selecao-mundo" style="display: none;">
-            <h2>Escolha seu Desafio</h2>
-            <p>Selecione a área do conhecimento que você deseja explorar:</p>
-            <button class="matematica" onclick="iniciarMundo('matematica')">📐 MATEMÁTICA</button>
-            <button class="portugues" onclick="iniciarMundo('portugues')">📚 PORTUGUÊS</button>
-            <button onclick="mostrarSelecao()">Voltar</button>
+            <h2>Escolha Seu Mundo</h2>
+            <button onclick="iniciarMundo('matematica')">
+                Mundo da Matemática ➕➖
+            </button>
+            <button onclick="iniciarMundo('portugues')">
+                Mundo do Português 📚
+            </button>
+            <button onclick="document.getElementById('selecao-mundo').style.display = 'none'; document.getElementById('menu-inicial').style.display = 'block';">
+                Voltar
+            </button>
         </div>
-
+        
         <div id="tela-mapa" style="display: none;">
-            <h2>Mapa da Jornada: <span id="mapa-titulo">Mundo</span></h2>
-            <p>Seu progresso:</p>
-            <div id="mapa-container"></div>
-            <p>Prepare-se para o Estágio!</p>
+            <h2 id="mapa-titulo">Mundo da Matemática - Nível 1</h2>
+            
+            <div id="mapa-container">
+                </div>
+            
             <button id="botao-mapa-iniciar" onclick="iniciarEstagioAtual()">INICIAR ESTÁGIO 1</button>
-            <button onclick="mostrarSelecao()">Mudar Mundo</button>
         </div>
 
 
         <div id="tela-batalha" style="display: none;">
-
-            <div style="margin-bottom: 20px; font-size: 1.4em; display: flex; justify-content: space-around; background-color: #ecf0f1; padding: 10px; border-radius: 8px;">
-                <p>⭐ Pontuação: <span id="pontuacao-display">0</span></p>
-                <p>⏳ Tempo: <span id="tempo-display">--</span>s</p>
+            
+            <div class="status-bar">
+                <div class="status-item">
+                    <span>⏳ Tempo: <span id="tempo-display">--</span>s</span>
+                </div>
+                <div class="status-item">
+                    <span>🏅 Pontuação: <span id="pontuacao-display">0</span></span>
+                </div>
+                <div class="status-item">
+                    <button onclick="mostrarMapa()" style="padding: 5px 10px; margin: 0;">Voltar ao Mapa</button>
+                </div>
             </div>
 
-            <div class="area-batalha">
-
-                <div class="personagem">
-                    <h3>Herói</h3>
-                    <img id="jogador-img" src="https://via.placeholder.com/150/2ecc71/FFFFFF?text=HEROI" alt="Herói do Jogo">
-                    <div class="vida-bar-container">
-                        <div id="vida-jogador-bar" class="vida-bar" style="width: 100%;">
-                            <span id="vida-jogador-texto">3 / 3</span>
-                        </div>
+            <div class="battle-area">
+                <div class="character">
+                    <h3>Você</h3>
+                    <img id="jogador-img" src="PLACEHOLDER_IMAGEM_HEROI">
+                    <div class="life-bar-container">
+                        <div id="vida-jogador-bar" class="life-bar" style="width: 100%;"></div>
                     </div>
+                    <span id="vida-jogador-texto">3 / 3</span>
                 </div>
 
-                <div class="personagem">
-                    <h3><span id="nome-inimigo">Inimigo</span></h3>
-                    <img id="inimigo-img" src="https://via.placeholder.com/150/e74c3c/FFFFFF?text=INIMIGO" alt="Inimigo do Jogo">
-                    <div class="vida-bar-container">
-                        <div id="vida-inimigo-bar" class="vida-bar" style="width: 100%;">
-                            <span id="vida-inimigo-texto">1 / 1</span>
-                        </div>
+                <div class="character">
+                    <h3 id="nome-inimigo">Inimigo</h3>
+                    <img id="inimigo-img" src="PLACEHOLDER_IMAGEM_INIMIGO">
+                    <div class="life-bar-container">
+                        <div id="vida-inimigo-bar" class="life-bar" style="width: 100%;"></div>
                     </div>
+                    <span id="vida-inimigo-texto">0 / 0</span>
                 </div>
-
             </div>
 
             <div id="area-pergunta">
@@ -71,11 +77,7 @@
                     </div>
             </div>
 
-            <button onclick="mostrarMapa()">Voltar ao Mapa</button>
         </div>
-
     </div>
-
-    <script src="script.js"></script>
-</body>
-</html>
+    </body>
+</html></html>
