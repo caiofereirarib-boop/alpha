@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aventura do Conhecimento</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+
+        <div id="menu-inicial">
+            <h1>Aventura do Conhecimento</h1>
+            <p>Seja bem-vindo(a)! Escolha seu caminho e comece a aprender enquanto se diverte.</p>
+            <button onclick="mostrarSelecao()">COMEÇAR A JOGAR</button>
+        </div>
+
+        <div id="selecao-mundo" style="display: none;">
+            <h2>Escolha seu Desafio</h2>
+            <p>Selecione a área do conhecimento que você deseja explorar:</p>
+            <button class="matematica" onclick="iniciarMundo('matematica')">📐 MATEMÁTICA</button>
+            <button class="portugues" onclick="iniciarMundo('portugues')">📚 PORTUGUÊS</button>
+            <button onclick="mostrarSelecao()">Voltar</button>
+        </div>
+
+        <div id="tela-mapa" style="display: none;">
+            <h2>Mapa da Jornada: <span id="mapa-titulo">Mundo</span></h2>
+            <p>Seu progresso:</p>
+            <div id="mapa-container"></div>
+            <p>Prepare-se para o Estágio!</p>
+            <button id="botao-mapa-iniciar" onclick="iniciarEstagioAtual()">INICIAR ESTÁGIO 1</button>
+            <button onclick="mostrarSelecao()">Mudar Mundo</button>
+        </div>
+
+
+        <div id="tela-batalha" style="display: none;">
+
+            <div style="margin-bottom: 20px; font-size: 1.4em; display: flex; justify-content: space-around; background-color: #ecf0f1; padding: 10px; border-radius: 8px;">
+                <p>⭐ Pontuação: <span id="pontuacao-display">0</span></p>
+                <p>⏳ Tempo: <span id="tempo-display">--</span>s</p>
+            </div>
+
+            <div class="area-batalha">
+
+                <div class="personagem">
+                    <h3>Herói</h3>
+                    <img id="jogador-img" src="https://via.placeholder.com/150/2ecc71/FFFFFF?text=HEROI" alt="Herói do Jogo">
+                    <div class="vida-bar-container">
+                        <div id="vida-jogador-bar" class="vida-bar" style="width: 100%;">
+                            <span id="vida-jogador-texto">3 / 3</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="personagem">
+                    <h3><span id="nome-inimigo">Inimigo</span></h3>
+                    <img id="inimigo-img" src="https://via.placeholder.com/150/e74c3c/FFFFFF?text=INIMIGO" alt="Inimigo do Jogo">
+                    <div class="vida-bar-container">
+                        <div id="vida-inimigo-bar" class="vida-bar" style="width: 100%;">
+                            <span id="vida-inimigo-texto">1 / 1</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div id="area-pergunta">
+                <div id="mensagem" class="msg-neutra">Selecione uma resposta para começar a batalha!</div>
+                <p id="pergunta-texto">Qual é a pergunta?</p>
+                <div id="opcoes-resposta">
+                    </div>
+            </div>
+
+            <button onclick="mostrarMapa()">Voltar ao Mapa</button>
+        </div>
+
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
