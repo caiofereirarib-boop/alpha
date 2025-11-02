@@ -1,6 +1,6 @@
 // --- Variáveis Globais de Jogo ---
 let vidaJogador = 3;
-const vidaJogadorMax = 3; 
+const vidaJogadorMax = 3;
 let mundoAtual = '';
 let perguntaAtual = {};
 let pontuacao = 0;
@@ -32,13 +32,18 @@ const PERGUNTAS_MAT = [
     { pergunta: "Se tenho 2 bonecas e ganho mais 2, com quantas eu fico?", respostas: ["3", "5", "4", "2"], correta: "4", inimigo: "Fada da Adição", inimigoImg: "https://via.placeholder.com/150/9b59b6/FFFFFF?text=Add-4", vida: 1 }
 ];
 
+// NOVO: Array de perguntas do Boss de Matemática
+const PERGUNTAS_BOSS_MAT = [
+    { pergunta: "Quanto é 1 + 1 + 1 + 1?", respostas: ["2", "3", "4", "5"], correta: "4", vida: 1 },
+    { pergunta: "Quanto é 5x3?", respostas: ["10", "15", "8", "35"], correta: "15", vida: 1 },
+    { pergunta: "Qual é o dobro de 8?", respostas: ["16", "10", "18", "4"], correta: "16", vida: 1 }
+];
+
+// NOVO: Boss de Matemática agora contém o array de perguntas
 const BOSS_MAT = { 
-    pergunta: "Quanto é 1 + 1 + 1 + 1?", 
-    respostas: ["2", "3", "4", "5"], 
-    correta: "4", 
+    perguntas: PERGUNTAS_BOSS_MAT, 
     inimigo: "DRAGÃO DOS CÁLCULOS (BOSS)", 
     inimigoImg: IMG_BOSS, 
-    vida: 3 
 };
 
 const PERGUNTAS_PORT = [
@@ -48,18 +53,24 @@ const PERGUNTAS_PORT = [
     { pergunta: "Quantas letras tem a palavra 'SOL'?", respostas: ["1", "2", "3", "4"], correta: "3", inimigo: "Sombra da Ortografia", inimigoImg: "https://via.placeholder.com/150/bdc3c7/FFFFFF?text=SOL-3", vida: 1 }
 ];
 
+// NOVO: Array de perguntas do Boss de Português
+const PERGUNTAS_BOSS_PORT = [
+    { pergunta: "Qual palavra está escrita de forma correta?", respostas: ["kaza", "caza", "casa", "kassa"], correta: "casa", vida: 1 },
+    { pergunta: "Qual o plural de 'cão'?", respostas: ["cãe", "cãos", "cachorros", "cães"], correta: "cães", vida: 1 },
+    { pergunta: "Qual o sinônimo de 'alegre'?", respostas: ["triste", "feliz", "bravo", "lento"], correta: "feliz", vida: 1 }
+];
+
+// NOVO: Boss de Português agora contém o array de perguntas
 const BOSS_PORT = { 
-    pergunta: "Qual palavra está escrita de forma correta?", 
-    respostas: ["kaza", "caza", "casa", "kassa"], 
-    correta: "casa", 
+    perguntas: PERGUNTAS_BOSS_PORT, 
     inimigo: "GRANDE FANTASMA DA GRAMÁTICA (BOSS)", 
     inimigoImg: "https://via.placeholder.com/150/c0392b/FFFFFF?text=BOSS-P", 
-    vida: 3 
 };
 
 
 /**
  * Cria a estrutura de estágios (pool de perguntas) para o mapa.
+ * **ATUALIZADO para tratar o Boss como múltiplos estágios.**
  */
 function criarEstagios(perguntas, boss) {
     const estagios = perguntas.map(p => ({
@@ -68,12 +79,20 @@ function criarEstagios(perguntas, boss) {
         concluido: false
     })).sort(() => Math.random() - 0.5); // Embaralha as perguntas padrão
 
-    // Adiciona o Boss como último estágio
-    estagios.push({
-        tipo: 'boss',
-        data: JSON.parse(JSON.stringify(boss)),
-        concluido: false
+    // Adiciona CADA pergunta do Boss como um estágio separado
+    boss.perguntas.forEach((p, index) => {
+        estagios.push({
+            tipo: 'boss',
+            data: { 
+                ...JSON.parse(JSON.stringify(p)), // Copia os dados da pergunta do Boss
+                inimigo: boss.inimigo,           // Adiciona o nome do Boss
+                inimigoImg: boss.inimigoImg,     // Adiciona a imagem do Boss
+                vida: 1 // Cada estágio do Boss tem vida 1
+            },
+            concluido: false
+        });
     });
+
     return estagios;
 }
 
@@ -259,9 +278,9 @@ function proximaPergunta() {
         return;
     }
 
-    // Inicializa a vida do inimigo para o novo combate
-    perguntaAtual.vidaMax = perguntaAtual.vida; 
-    perguntaAtual.vidaAtual = perguntaAtual.vida; 
+    // Inicializa a vida do inimigo para o novo combate (Sempre 1, pois o Boss foi dividido em estágios de vida 1)
+    perguntaAtual.vidaMax = 1; 
+    perguntaAtual.vidaAtual = 1; 
     
     document.getElementById('nome-inimigo').textContent = perguntaAtual.inimigo;
     document.getElementById('inimigo-img').src = perguntaAtual.inimigoImg || IMG_INIMIGO_PADRAO;
@@ -306,6 +325,10 @@ function proximaPergunta() {
 }
 
 
+/**
+ * Verifica a resposta do jogador e atualiza a vida do jogador e do estágio.
+ * **ATUALIZADO para simplificar a derrota do estágio.**
+ */
 function verificarResposta(respostaSelecionada) {
     pararCronometro();
     speechSynthesis.cancel();
@@ -317,12 +340,13 @@ function verificarResposta(respostaSelecionada) {
 
     const acertou = respostaSelecionada === perguntaAtual.correta;
     const timeout = respostaSelecionada === null;
+    const isBossStage = estagiosDoMundoAtual[estagioAtualIndex].tipo === 'boss';
 
     if (acertou) {
-        perguntaAtual.vidaAtual--; 
-        adicionarPontuacao(perguntaAtual.vidaMax > 1);
+        perguntaAtual.vidaAtual = 0; // Derrota o inimigo/estágio atual
+        adicionarPontuacao(isBossStage);
         mensagemElemento.className = 'msg-acerto';
-        mensagemElemento.textContent = `🎉 Acertou! Dano no ${perguntaAtual.inimigo}!`;
+        mensagemElemento.textContent = `🎉 Acertou! ${isBossStage ? 'Boss levou dano!' : 'Inimigo derrotado!'}`;
         falar("Você acertou! Muito bem!");
     } else if (timeout) {
         vidaJogador--;
@@ -345,6 +369,10 @@ function verificarResposta(respostaSelecionada) {
 }
 
 
+/**
+ * Verifica se o jogo acabou, se o estágio foi concluído ou se precisa continuar no mesmo estágio.
+ * **ATUALIZADO: Remoção da lógica de Boss com múltiplas vidas/turnos, agora ele é derrotado no primeiro acerto.**
+ */
 function verificarFimTurno(turnoFinalizado) {
     if (vidaJogador <= 0) {
         // GAME OVER
@@ -357,7 +385,7 @@ function verificarFimTurno(turnoFinalizado) {
         falar("Fim de jogo. Não desista! Tente de novo.");
 
     } else if (perguntaAtual.vidaAtual <= 0) {
-        // INIMIGO DERROTADO
+        // INIMIGO/ESTÁGIO DERROTADO
         estagiosDoMundoAtual[estagioAtualIndex].concluido = true;
         
         document.getElementById('mensagem').className = 'msg-acerto';
@@ -373,46 +401,12 @@ function verificarFimTurno(turnoFinalizado) {
                 proximaPergunta(); // Chama para exibir a tela de vitória final
             }
         }, 1500); 
-    } else if (turnoFinalizado && perguntaAtual.vidaAtual > 0) {
-        // BOSS VIVO, JOGADOR ACERTOU OU ERROU (e não morreu)
-        document.getElementById('mensagem').className = 'msg-neutra';
-        document.getElementById('mensagem').textContent = `O Boss ainda está forte! Ataque de novo! (Vida: ${perguntaAtual.vidaAtual})`;
-        falar("O chefe resistiu! Qual a próxima resposta?");
         
-        // Recria os botões do Boss (necessário para reativar o clique)
-        const opcoesDiv = document.getElementById('opcoes-resposta');
-        opcoesDiv.innerHTML = '';
-        const respostasEmbaralhadas = [...perguntaAtual.respostas].sort(() => Math.random() - 0.5);
-        
-        // Botões de Ouvir
-        const btnOuvirPergunta = document.createElement('button');
-        btnOuvirPergunta.textContent = '🔊 Ouvir Pergunta';
-        btnOuvirPergunta.style.marginBottom = '15px';
-        btnOuvirPergunta.onclick = () => falar(perguntaAtual.pergunta);
-        opcoesDiv.appendChild(btnOuvirPergunta);
-        
-        const btnOuvirOpcoes = document.createElement('button');
-        btnOuvirOpcoes.textContent = '🗣️ Ouvir Opções';
-        btnOuvirOpcoes.style.marginBottom = '15px';
-        btnOuvirOpcoes.style.marginLeft = '10px'; 
-        btnOuvirOpcoes.onclick = () => lerOpcoesDeResposta(respostasEmbaralhadas);
-        opcoesDiv.appendChild(btnOuvirOpcoes);
-        
-        opcoesDiv.appendChild(document.createElement('br')); 
-
-        respostasEmbaralhadas.forEach(resposta => {
-            const btn = document.createElement('button');
-            btn.textContent = resposta;
-            btn.onclick = () => verificarResposta(resposta);
-            opcoesDiv.appendChild(btn);
-        });
-
-        iniciarCronometro();
-
     } else {
         // INIMIGO VIVO (Jogador errou): Mantém a mesma pergunta
         document.getElementById('mensagem').className = 'msg-neutra';
         document.getElementById('mensagem').textContent = "Sua vez! Tente a resposta correta para atacar!";
+        
         // Reabilita os botões para que o jogador tente novamente
         if (turnoFinalizado === false) { 
             Array.from(document.getElementById('opcoes-resposta').children).forEach(btn => btn.disabled = false);
