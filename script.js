@@ -13,7 +13,7 @@ let estagiosDoMundoAtual = []; // Array de estágios do mundo escolhido
 let dificuldadeAtual = 'NIVEL_1'; // Controla a dificuldade das perguntas
 const ESTAGIOS_POR_NIVEL = 4; // Quantidade de perguntas padrão por nível antes de um Boss
 
-// NOVO: Rastreia a pergunta atual dentro de um estágio BOSS de múltiplas perguntas
+// Rastreia a pergunta atual dentro de um estágio BOSS de múltiplas perguntas
 let perguntaAtualIndexBoss = 0; 
 
 
@@ -29,12 +29,763 @@ const IMG_BOSS_1 = "https://via.placeholder.com/150/8e44ad/FFFFFF?text=BOSS-M1";
 const IMG_BOSS_2_MAT = "https://via.placeholder.com/150/ff5733/FFFFFF?text=BOSS-M2"; 
 const IMG_BOSS_2_PORT = "https://via.placeholder.com/150/c0392b/FFFFFF?text=BOSS-P2"; 
 
+// --- NOVAS IMAGENS PARA NÍVEL 3 E BOSS FINAL
+const IMG_BOSS_ULTIMATE = "https://via.placeholder.com/150/000080/FFFFFF?text=BOSS-ULTIMATE";
+const IMG_RAIZ = "https://via.placeholder.com/150/ff00ff/FFFFFF?text=Raiz-1";
+const IMG_ALGEBRA = "https://via.placeholder.com/150/00ffff/FFFFFF?text=Alg-2";
+const IMG_GEOMETRIA = "https://via.placeholder.com/150/ffff00/FFFFFF?text=Geo-3";
+const IMG_RITMO = "https://via.placeholder.com/150/f0f0f0/FFFFFF?text=Rit-4";
+
+const IMG_VERBO = "https://via.placeholder.com/150/ff00ff/FFFFFF?text=Verb-1";
+const IMG_SILABA = "https://via.placeholder.com/150/00ffff/FFFFFF?text=Sil-2";
+const IMG_MIMICO = "https://via.placeholder.com/150/ffff00/FFFFFF?text=Mim-3";
+const IMG_COLETIVO = "https://via.placeholder.com/150/f0f0f0/FFFFFF?text=Col-4";
+
 
 // --- CONTEÚDO: PERGUNTAS DE MATEMÁTICA ---
 const PERGUNTAS_MAT = {
     NIVEL_1: [
         { pergunta: "Quanto é 3 + 1?", respostas: ["1", "3", "4", "2"], correta: "4", inimigo: "Monstro da Adição", inimigoImg: "https://via.placeholder.com/150/e74c3c/FFFFFF?text=Add-1" },
         { pergunta: "Qual vem depois do número 9?", respostas: ["8", "10", "11", "90"], correta: "10", inimigo: "Contador Rápido", inimigoImg: "https://via.placeholder.com/150/2ecc71/FFFFFF?text=Cont-2" },
+        { pergunta: "Qual forma tem 3 pontas (lados)?", respostas: ["Círculo", "Quadrado", "Triângulo", "Estrela"], correta: "Triângulo", inimigo: "Geometra Maluco", inimigoImg: "https://via.placeholder.com/150/f1c40f/FFFFFF?text=Forma-3" },
+        { pergunta: "Se tenho 2 bonecas e ganho mais 2, com quantas eu fico?", respostas: ["3", "5", "4", "2"], correta: "4", inimigo: "Fada da Adição", inimigoImg: "https://via.placeholder.com/150/9b59b6/FFFFFF?text=Add-4" }
+    ],
+    NIVEL_2: [
+        { pergunta: "Quanto é 5 x 3?", respostas: ["10", "15", "8", "20"], correta: "15", inimigo: "Multiplicador Fantasma", inimigoImg: "https://via.placeholder.com/150/34495e/FFFFFF?text=Mult-1" },
+        { pergunta: "Qual é o dobro de 7?", respostas: ["12", "16", "14", "21"], correta: "14", inimigo: "Gênio do Dobro", inimigoImg: "https://via.placeholder.com/150/16a085/FFFFFF?text=Dob-2" },
+        { pergunta: "Qual o resultado de 10 - 2 x 4?", respostas: ["32", "2", "8", "4"], correta: "2", inimigo: "Mago das Operações", inimigoImg: "https://via.placeholder.com/150/d35400/FFFFFF?text=Op-3" },
+        { pergunta: "Se um lápis custa R$ 2,00, quanto custam 5 lápis?", respostas: ["R$ 8,00", "R$ 12,00", "R$ 10,00", "R$ 5,00"], correta: "R$ 10,00", inimigo: "Mercador Trapaceiro", inimigoImg: "https://via.placeholder.com/150/7f8c8d/FFFFFF?text=Merc-4" }
+    ],
+    // NOVO NÍVEL
+    NIVEL_3: [
+        { pergunta: "Qual é a raiz quadrada de 16?", respostas: ["2", "8", "4", "16"], correta: "4", inimigo: "Mestre da Raiz", inimigoImg: IMG_RAIZ },
+        { pergunta: "Se $3x = 21$, qual o valor de x?", respostas: ["6", "7", "8", "9"], correta: "7", inimigo: "Guerreiro da Álgebra", inimigoImg: IMG_ALGEBRA },
+        { pergunta: "Qual a área de um quadrado com lado 5?", respostas: ["10", "20", "25", "30"], correta: "25", inimigo: "Monstro da Geometria", inimigoImg: IMG_GEOMETRIA },
+        { pergunta: "O que vem depois do 100 em contagem de 10 em 10?", respostas: ["101", "110", "1000", "90"], correta: "110", inimigo: "Ancião do Ritmo", inimigoImg: IMG_RITMO }
+    ],
+};
+
+// --- CONTEÚDO: BOSSES DE MATEMÁTICA ---
+const PERGUNTAS_BOSS_MAT_1 = [
+    { pergunta: "Quanto é 1 + 1 + 1 + 1 + 1?", respostas: ["4", "5", "6", "3"], correta: "5" },
+    { pergunta: "Qual é o triplo de 5?", respostas: ["10", "15", "8", "20"], correta: "15" },
+    { pergunta: "Qual número está faltando: 2, 4, 6, _, 10?", respostas: ["7", "8", "9", "5"], correta: "8" }
+];
+
+const BOSS_MAT_1 = { 
+    perguntas: PERGUNTAS_BOSS_MAT_1, 
+    inimigo: "DRAGÃO DOS CÁLCULOS (BOSS 1)", 
+    inimigoImg: IMG_BOSS_1, 
+    proximoNivel: 'NIVEL_2'
+};
+
+const PERGUNTAS_BOSS_MAT_2 = [
+    { pergunta: "Qual o valor de 'x' na equação: $x + 5 = 12$?", respostas: ["5", "7", "6", "17"], correta: "7" },
+    { pergunta: "Quanto é $4^2$ (quatro ao quadrado)?", respostas: ["8", "16", "4", "24"], correta: "16" },
+    { pergunta: "Se $\\frac{1}{2}$ de uma pizza custa R$ 10,00, quanto custa a pizza inteira?", respostas: ["R$ 15,00", "R$ 20,00", "R$ 5,00", "R$ 10,00"], correta: "R$ 20,00" }
+];
+
+const BOSS_MAT_2 = { 
+    perguntas: PERGUNTAS_BOSS_MAT_2, 
+    inimigo: "KRATOS, O DEUS DA ÁLGEBRA (BOSS 2)", 
+    inimigoImg: IMG_BOSS_2_MAT, 
+    proximoNivel: 'NIVEL_3' // MUDANÇA: AGORA LEVA PARA O NÍVEL 3
+};
+
+// NOVO BOSS FINAL DE MATEMÁTICA
+const PERGUNTAS_BOSS_MAT_3 = [
+    { pergunta: "Resolva: $\\sqrt{49} + 3 \\times 2$", respostas: ["13", "14", "16", "20"], correta: "13" },
+    { pergunta: "Qual a porcentagem: 50% de 80?", respostas: ["20", "30", "40", "50"], correta: "40" },
+    { pergunta: "A soma dos ângulos internos de um triângulo é:", respostas: ["90°", "180°", "270°", "360°"], correta: "180°" },
+    { pergunta: "O que é um número primo?", respostas: ["Divisível por 2", "Par", "Divisível apenas por 1 e por ele mesmo", "Maior que 10"], correta: "Divisível apenas por 1 e por ele mesmo" }
+];
+
+const BOSS_MAT_3 = { 
+    perguntas: PERGUNTAS_BOSS_MAT_3, 
+    inimigo: "O TODO PODEROSO DA MATEMÁTICA (BOSS FINAL)", 
+    inimigoImg: IMG_BOSS_ULTIMATE, 
+    proximoNivel: null 
+};
+
+
+// --- CONTEÚDO: PERGUNTAS DE PORTUGUÊS ---
+const PERGUNTAS_PORT = {
+    NIVEL_1: [
+        { pergunta: "Qual palavra começa com a letra 'B'?", respostas: ["Casa", "Bola", "Pato", "Rato"], correta: "Bola", inimigo: "Serpente da Palavra", inimigoImg: "https://via.placeholder.com/150/3498db/FFFFFF?text=Letra-B" },
+        { pergunta: "Qual é a vogal de 'P É'?", respostas: ["A", "U", "E", "O"], correta: "E", inimigo: "Ogro das Vogais", inimigoImg: "https://via.placeholder.com/150/e67e22/FFFFFF?text=Vogal-E" },
+        { pergunta: "O que rima com 'MÃO'?", respostas: ["CARRO", "PÃO", "BIKE", "BALDE"], correta: "PÃO", inimigo: "Rima Risonha", inimigoImg: "https://via.placeholder.com/150/1abc9c/FFFFFF?text=Rima-2" },
+        { pergunta: "Quantas letras tem a palavra 'SOL'?", respostas: ["1", "2", "3", "4"], correta: "3", inimigo: "Sombra da Ortografia", inimigoImg: "https://via.placeholder.com/150/bdc3c7/FFFFFF?text=SOL-3" }
+    ],
+    NIVEL_2: [
+        { pergunta: "Qual é o plural de 'cão'?", respostas: ["cãe", "cãos", "cachorros", "cães"], correta: "cães", inimigo: "Dragão do Plural", inimigoImg: "https://via.placeholder.com/150/e84393/FFFFFF?text=Plural-1" },
+        { pergunta: "Qual é o sinônimo de 'alegre'?", respostas: ["triste", "feliz", "bravo", "lento"], correta: "feliz", inimigo: "Gênio dos Sinônimos", inimigoImg: "https://via.placeholder.com/150/95a5a6/FFFFFF?text=Sino-2" },
+        { pergunta: "Qual palavra é um 'substantivo próprio'?", respostas: ["mesa", "cachorro", "Brasil", "flor"], correta: "Brasil", inimigo: "Guardião da Gramática", inimigoImg: "https://via.placeholder.com/150/2c3e50/FFFFFF?text=Gram-3" },
+        { pergunta: "Qual palavra está escrita de forma correta?", respostas: ["exemplo", "ezemplo", "ezempro", "esemplo"], correta: "exemplo", inimigo: "Feiticeiro da Escrita", inimigoImg: "https://via.placeholder.com/150/f39c12/FFFFFF?text=Ort-4" }
+    ],
+    // NOVO NÍVEL
+    NIVEL_3: [
+        { pergunta: "Qual é o pretérito imperfeito do verbo 'ser' na 1ª pessoa do singular?", respostas: ["Eu fui", "Eu era", "Eu serei", "Eu sou"], correta: "Eu era", inimigo: "Bruxa dos Verbos", inimigoImg: IMG_VERBO },
+        { pergunta: "O que é uma 'oxítona'?", respostas: ["Sílaba forte no meio", "Sílaba forte na última posição", "Sílaba forte na penúltima", "Não tem sílaba forte"], correta: "Sílaba forte na última posição", inimigo: "Duende da Sílaba", inimigoImg: IMG_SILABA },
+        { pergunta: "Em qual palavra o 'H' é um dígrafo?", respostas: ["Hotel", "Homem", "Chave", "Honra"], correta: "Chave", inimigo: "Mímico da Letra", inimigoImg: IMG_MIMICO },
+        { pergunta: "Qual o substantivo coletivo de 'peixes'?", respostas: ["Nuvem", "Bando", "Cardume", "Colmeia"], correta: "Cardume", inimigo: "Pescador Esperto", inimigoImg: IMG_COLETIVO }
+    ],
+};
+
+// --- CONTEÚDO: BOSSES DE PORTUGUÊS ---
+
+const PERGUNTAS_BOSS_PORT_1 = [
+    { pergunta: "Qual palavra está escrita de forma correta?", respostas: ["kaza", "caza", "casa", "kassa"], correta: "casa" },
+    { pergunta: "Em qual frase a pontuação está correta?", respostas: ["Eu, comi bolo", "Eu comi bolo!", "Eu, comi, bolo", "Eu comi, bolo"], correta: "Eu comi bolo!" },
+    { pergunta: "Qual é o antônimo de 'claro'?", respostas: ["luminoso", "brilhante", "escuro", "transparente"], correta: "escuro" }
+];
+
+const BOSS_PORT_1 = { 
+    perguntas: PERGUNTAS_BOSS_PORT_1, 
+    inimigo: "GRANDE FANTASMA DA GRAMÁTICA (BOSS 1)", 
+    inimigoImg: IMG_BOSS_1, 
+    proximoNivel: 'NIVEL_2'
+};
+
+const PERGUNTAS_BOSS_PORT_2 = [
+    { pergunta: "Qual é a classe gramatical de 'rapidamente'?", respostas: ["Substantivo", "Verbo", "Adjetivo", "Advérbio"] , correta: "Advérbio"},
+    { pergunta: "Qual palavra NÃO tem acento tônico na última sílaba?", respostas: ["sofá", "avô", "pássaro", "parabéns"], correta: "pássaro" },
+    { pergunta: "Na frase 'O cão e o gato são amigos.', qual é o 'sujeito'?", respostas: ["O cão e o gato", "amigos", "são", "o gato"], correta: "O cão e o gato" }
+];
+
+const BOSS_PORT_2 = { 
+    perguntas: PERGUNTAS_BOSS_PORT_2, 
+    inimigo: "MINERVA, A DEUSA DA SINTAXE (BOSS 2)", 
+    inimigoImg: IMG_BOSS_2_PORT, 
+    proximoNivel: 'NIVEL_3' // MUDANÇA: AGORA LEVA PARA O NÍVEL 3
+};
+
+// NOVO BOSS FINAL DE PORTUGUÊS
+const PERGUNTAS_BOSS_PORT_3 = [
+    { pergunta: "Qual a função sintática da palavra 'muito' na frase: 'Ele é muito inteligente'?", respostas: ["Objeto direto", "Predicativo do sujeito", "Adjunto adverbial de intensidade", "Aposto"], correta: "Adjunto adverbial de intensidade" },
+    { pergunta: "Qual palavra está incorreta no plural?", respostas: ["Capitães", "Pães", "Cidadões", "Degraus"], correta: "Cidadões" },
+    { pergunta: "A oração 'Onde você mora?' é classificada como:", respostas: ["Declarativa", "Imperativa", "Exclamativa", "Interrogativa"], correta: "Interrogativa" },
+    { pergunta: "Qual destas palavras é um 'adjetivo pátrio'?", respostas: ["Pessoa", "Brasileiro", "Amigo", "Rápido"], correta: "Brasileiro" }
+];
+
+const BOSS_PORT_3 = { 
+    perguntas: PERGUNTAS_BOSS_PORT_3, 
+    inimigo: "O GUARDIÃO DA LÍNGUA PORTUGUESA (BOSS FINAL)", 
+    inimigoImg: IMG_BOSS_ULTIMATE, 
+    proximoNivel: null 
+};
+
+
+/**
+ * Cria a estrutura de estágios (pool de perguntas) para o mapa.
+ * **ATUALIZADO para 3 níveis e 3 Bosses.**
+ */
+function criarEstagios(perguntasPorNivel, boss1, boss2, boss3) { // NOVO PARÂMETRO
+    let estagios = [];
+
+    // NÍVEL 1
+    const nivel1Estagios = perguntasPorNivel.NIVEL_1
+        .map(p => ({
+            tipo: 'pergunta',
+            data: { ...JSON.parse(JSON.stringify(p)), vidaMax: 1, vidaAtual: 1, nivel: 'NIVEL_1' },
+            concluido: false
+        }))
+        .sort(() => Math.random() - 0.5)
+        .slice(0, ESTAGIOS_POR_NIVEL); 
+    
+    estagios.push(...nivel1Estagios);
+
+    // BOSS 1
+    estagios.push({
+        tipo: 'boss',
+        data: { 
+            inimigo: boss1.inimigo,           
+            inimigoImg: boss1.inimigoImg,     
+            perguntas: boss1.perguntas.map((p, index) => ({...p, id: index})),
+            vidaMax: boss1.perguntas.length, 
+            vidaAtual: boss1.perguntas.length,
+            proximoNivel: boss1.proximoNivel
+        },
+        concluido: false
+    });
+
+    // NÍVEL 2
+    const nivel2Estagios = perguntasPorNivel.NIVEL_2
+        .map(p => ({
+            tipo: 'pergunta',
+            data: { ...JSON.parse(JSON.stringify(p)), vidaMax: 1, vidaAtual: 1, nivel: 'NIVEL_2' }, 
+            concluido: false
+        }))
+        .sort(() => Math.random() - 0.5)
+        .slice(0, ESTAGIOS_POR_NIVEL); 
+    
+    estagios.push(...nivel2Estagios);
+
+    // BOSS 2
+    estagios.push({
+        tipo: 'boss',
+        data: { 
+            inimigo: boss2.inimigo,           
+            inimigoImg: boss2.inimigoImg,     
+            perguntas: boss2.perguntas.map((p, index) => ({...p, id: index})),
+            vidaMax: boss2.perguntas.length,
+            vidaAtual: boss2.perguntas.length,
+            proximoNivel: boss2.proximoNivel // Leva para NIVEL_3
+        },
+        concluido: false
+    });
+
+    // NOVO: NÍVEL 3
+    const nivel3Estagios = perguntasPorNivel.NIVEL_3
+        .map(p => ({
+            tipo: 'pergunta',
+            data: { ...JSON.parse(JSON.stringify(p)), vidaMax: 1, vidaAtual: 1, nivel: 'NIVEL_3' }, 
+            concluido: false
+        }))
+        .sort(() => Math.random() - 0.5)
+        .slice(0, ESTAGIOS_POR_NIVEL); 
+    
+    estagios.push(...nivel3Estagios);
+
+    // NOVO: BOSS 3 (FINAL)
+    estagios.push({
+        tipo: 'boss',
+        data: { 
+            inimigo: boss3.inimigo,           
+            inimigoImg: boss3.inimigoImg,     
+            perguntas: boss3.perguntas.map((p, index) => ({...p, id: index})),
+            vidaMax: boss3.perguntas.length,
+            vidaAtual: boss3.perguntas.length,
+            proximoNivel: boss3.proximoNivel // Será 'null' (Fim de Jogo)
+        },
+        concluido: false
+    });
+
+    return estagios;
+}
+
+
+// --- Funções de Leitura de Voz (Text-to-Speech) ---
+
+function falar(texto) {
+    if ('speechSynthesis' in window) {
+        speechSynthesis.cancel(); 
+        const utterance = new SpeechSynthesisUtterance(texto);
+        utterance.lang = 'pt-BR'; 
+        utterance.rate = 0.9; 
+        speechSynthesis.speak(utterance);
+    } else {
+        console.warn("API de Síntese de Fala não suportada neste navegador.");
+    }
+}
+
+function lerOpcoesDeResposta(opcoes) {
+    if ('speechSynthesis' in window) {
+        speechSynthesis.cancel(); 
+        let textoCompleto = "As opções são: ";
+        opcoes.forEach((opcao, index) => {
+            textoCompleto += `Opção ${index + 1}: ${opcao}. `;
+        });
+        falar(textoCompleto);
+    }
+}
+
+// --- Funções de Navegação e Reset ---
+
+function ocultarTodas() {
+    speechSynthesis.cancel();
+    pararCronometro();
+
+    document.getElementById('menu-inicial').style.display = 'none';
+    document.getElementById('selecao-mundo').style.display = 'none';
+    document.getElementById('tela-batalha').style.display = 'none';
+    document.getElementById('tela-mapa').style.display = 'none'; 
+}
+
+function mostrarSelecao() {
+    ocultarTodas();
+    
+    // Reseta estado do jogo globalmente
+    vidaJogador = vidaJogadorMax;
+    pontuacao = 0;
+    estagioAtualIndex = 0;
+    estagiosDoMundoAtual = [];
+    mundoAtual = '';
+    dificuldadeAtual = 'NIVEL_1'; 
+    perguntaAtualIndexBoss = 0; 
+    
+    // Atualiza o display visual (manter esta parte fora do DOM substituível)
+    document.getElementById('pontuacao-display').textContent = pontuacao;
+    document.getElementById('vida-jogador-texto').textContent = vidaJogador + ' / ' + vidaJogadorMax;
+    document.getElementById('vida-inimigo-texto').textContent = '0 / 0';
+    document.getElementById('vida-inimigo-bar').style.width = '0%';
+    document.getElementById('tempo-display').textContent = '--';
+    
+    // Garante que a estrutura da pergunta exista antes de usá-la.
+    const areaPergunta = document.getElementById('area-pergunta');
+    areaPergunta.innerHTML = '<div id="mensagem" class="msg-neutra">Selecione uma resposta para começar a batalha!</div><p id="pergunta-texto">Qual é a pergunta?</p><div id="opcoes-resposta"></div>';
+
+
+    document.getElementById('selecao-mundo').style.display = 'block';
+}
+
+
+function iniciarMundo(mundo) { // ATUALIZADO: Inclui BOSS 3
+    mundoAtual = mundo;
+    
+    if (mundo === 'matematica') {
+        estagiosDoMundoAtual = criarEstagios(PERGUNTAS_MAT, BOSS_MAT_1, BOSS_MAT_2, BOSS_MAT_3); 
+    } else if (mundo === 'portugues') {
+        estagiosDoMundoAtual = criarEstagios(PERGUNTAS_PORT, BOSS_PORT_1, BOSS_PORT_2, BOSS_PORT_3);
+    }
+
+    estagioAtualIndex = 0; 
+    mostrarMapa();
+}
+
+
+// --- Funções do Mapa de Progresso ---
+
+function mostrarMapa() {
+    ocultarTodas();
+    document.getElementById('tela-mapa').style.display = 'block';
+    
+    const mapaContainer = document.getElementById('mapa-container');
+    mapaContainer.innerHTML = ''; 
+    
+    const mundoNome = mundoAtual === 'matematica' ? 'Matemática' : 'Português';
+    document.getElementById('mapa-titulo').textContent = `Mundo da ${mundoNome} - Nível: ${dificuldadeAtual.replace('_', ' ')}`;
+
+    estagiosDoMundoAtual.forEach((estagio, index) => {
+        const isAtual = index === estagioAtualIndex;
+        const isConcluido = estagio.concluido;
+        const isBoss = estagio.tipo === 'boss';
+
+        const node = document.createElement('div');
+        node.className = 'mapa-node';
+        node.style.cssText = `
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 10px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: white; 
+            font-size: 14px;
+        `;
+
+        // Define a cor e o texto do nó
+        if (isConcluido) {
+            node.style.backgroundColor = '#2ecc71'; 
+            node.textContent = isBoss ? '🏆' : '✅';
+        } else if (isAtual) {
+            node.style.backgroundColor = isBoss ? '#e74c3c' : '#f39c12'; 
+            node.textContent = isBoss ? '🔥' : (index + 1); 
+            node.onclick = iniciarEstagioAtual; 
+        } else {
+            node.style.backgroundColor = '#bdc3c7'; 
+            node.textContent = isBoss ? 'B' : (index + 1);
+            node.style.cursor = 'default';
+        }
+        
+        // Adiciona um conector (linha)
+        if (index < estagiosDoMundoAtual.length - 1) {
+            const linha = document.createElement('div');
+            linha.style.cssText = `
+                width: 50px;
+                height: 5px;
+                background-color: ${estagiosDoMundoAtual[index].concluido ? '#2ecc71' : '#bdc3c7'};
+            `;
+            mapaContainer.appendChild(node);
+            mapaContainer.appendChild(linha);
+        } else {
+             mapaContainer.appendChild(node);
+        }
+    });
+
+    document.getElementById('botao-mapa-iniciar').textContent = `INICIAR ESTÁGIO ${estagioAtualIndex + 1}`;
+}
+
+
+function iniciarEstagioAtual() {
+    ocultarTodas();
+    document.getElementById('tela-batalha').style.display = 'block';
+    
+    // Define a imagem do herói com base no mundo
+    document.getElementById('        { pergunta: "Quanto é 3 + 1?", respostas: ["1", "3", "4", "2"], correta: "4", inimigo: "Monstro da Adição", inimigoImg: "https://via.placeholder.com/150/e74c3c/FFFFFF?text=Add-1" },
+        { pergunta: "Qual vem depois do número 9?", respostas: ["8", "10", "11", "90"], correta: "10", inimigo: "Contador Rápido", inimigoImg: "https://via.placeholder.com/150/2ecc71/FFFFFF?text=Cont-2" },
+        { pergunta: "Qual forma tem 3 pontas (lados)?", respostas: ["Círculo", "Quadrado", "Triângulo", "Estrela"], correta: "Triângulo", inimigo: "Geometra Maluco", inimigoImg: "https://via.placeholder.com/150/f1c40f/FFFFFF?text=Forma-3" },
+        { pergunta: "Se tenho 2 bonecas e ganho mais 2, com quantas eu fico?", respostas: ["3", "5", "4", "2"], correta: "4", inimigo: "Fada da Adição", inimigoImg: "https://via.placeholder.com/150/9b59b6/FFFFFF?text=Add-4" }
+    ],
+    NIVEL_2: [
+        { pergunta: "Quanto é 5 x 3?", respostas: ["10", "15", "8", "20"], correta: "15", inimigo: "Multiplicador Fantasma", inimigoImg: "https://via.placeholder.com/150/34495e/FFFFFF?text=Mult-1" },
+        { pergunta: "Qual é o dobro de 7?", respostas: ["12", "16", "14", "21"], correta: "14", inimigo: "Gênio do Dobro", inimigoImg: "https://via.placeholder.com/150/16a085/FFFFFF?text=Dob-2" },
+        { pergunta: "Qual o resultado de 10 - 2 x 4?", respostas: ["32", "2", "8", "4"], correta: "2", inimigo: "Mago das Operações", inimigoImg: "https://via.placeholder.com/150/d35400/FFFFFF?text=Op-3" },
+        { pergunta: "Se um lápis custa R$ 2,00, quanto custam 5 lápis?", respostas: ["R$ 8,00", "R$ 12,00", "R$ 10,00", "R$ 5,00"], correta: "R$ 10,00", inimigo: "Mercador Trapaceiro", inimigoImg: "https://via.placeholder.com/150/7f8c8d/FFFFFF?text=Merc-4" }
+    ],
+    // NOVO NÍVEL
+    NIVEL_3: [
+        { pergunta: "Qual é a raiz quadrada de 16?", respostas: ["2", "8", "4", "16"], correta: "4", inimigo: "Mestre da Raiz", inimigoImg: IMG_RAIZ },
+        { pergunta: "Se $3x = 21$, qual o valor de x?", respostas: ["6", "7", "8", "9"], correta: "7", inimigo: "Guerreiro da Álgebra", inimigoImg: IMG_ALGEBRA },
+        { pergunta: "Qual a área de um quadrado com lado 5?", respostas: ["10", "20", "25", "30"], correta: "25", inimigo: "Monstro da Geometria", inimigoImg: IMG_GEOMETRIA },
+        { pergunta: "O que vem depois do 100 em contagem de 10 em 10?", respostas: ["101", "110", "1000", "90"], correta: "110", inimigo: "Ancião do Ritmo", inimigoImg: IMG_RITMO }
+    ],
+};
+
+// --- CONTEÚDO: BOSSES DE MATEMÁTICA ---
+const PERGUNTAS_BOSS_MAT_1 = [
+    { pergunta: "Quanto é 1 + 1 + 1 + 1 + 1?", respostas: ["4", "5", "6", "3"], correta: "5" },
+    { pergunta: "Qual é o triplo de 5?", respostas: ["10", "15", "8", "20"], correta: "15" },
+    { pergunta: "Qual número está faltando: 2, 4, 6, _, 10?", respostas: ["7", "8", "9", "5"], correta: "8" }
+];
+
+const BOSS_MAT_1 = { 
+    perguntas: PERGUNTAS_BOSS_MAT_1, 
+    inimigo: "DRAGÃO DOS CÁLCULOS (BOSS 1)", 
+    inimigoImg: IMG_BOSS_1, 
+    proximoNivel: 'NIVEL_2'
+};
+
+const PERGUNTAS_BOSS_MAT_2 = [
+    { pergunta: "Qual o valor de 'x' na equação: $x + 5 = 12$?", respostas: ["5", "7", "6", "17"], correta: "7" },
+    { pergunta: "Quanto é $4^2$ (quatro ao quadrado)?", respostas: ["8", "16", "4", "24"], correta: "16" },
+    { pergunta: "Se $\\frac{1}{2}$ de uma pizza custa R$ 10,00, quanto custa a pizza inteira?", respostas: ["R$ 15,00", "R$ 20,00", "R$ 5,00", "R$ 10,00"], correta: "R$ 20,00" }
+];
+
+const BOSS_MAT_2 = { 
+    perguntas: PERGUNTAS_BOSS_MAT_2, 
+    inimigo: "KRATOS, O DEUS DA ÁLGEBRA (BOSS 2)", 
+    inimigoImg: IMG_BOSS_2_MAT, 
+    proximoNivel: 'NIVEL_3' // MUDANÇA: AGORA LEVA PARA O NÍVEL 3
+};
+
+// NOVO BOSS FINAL DE MATEMÁTICA
+const PERGUNTAS_BOSS_MAT_3 = [
+    { pergunta: "Resolva: $\\sqrt{49} + 3 \\times 2$", respostas: ["13", "14", "16", "20"], correta: "13" },
+    { pergunta: "Qual a porcentagem: 50% de 80?", respostas: ["20", "30", "40", "50"], correta: "40" },
+    { pergunta: "A soma dos ângulos internos de um triângulo é:", respostas: ["90°", "180°", "270°", "360°"], correta: "180°" },
+    { pergunta: "O que é um número primo?", respostas: ["Divisível por 2", "Par", "Divisível apenas por 1 e por ele mesmo", "Maior que 10"], correta: "Divisível apenas por 1 e por ele mesmo" }
+];
+
+const BOSS_MAT_3 = { 
+    perguntas: PERGUNTAS_BOSS_MAT_3, 
+    inimigo: "O TODO PODEROSO DA MATEMÁTICA (BOSS FINAL)", 
+    inimigoImg: IMG_BOSS_ULTIMATE, 
+    proximoNivel: null 
+};
+
+
+// --- CONTEÚDO: PERGUNTAS DE PORTUGUÊS ---
+const PERGUNTAS_PORT = {
+    NIVEL_1: [
+        { pergunta: "Qual palavra começa com a letra 'B'?", respostas: ["Casa", "Bola", "Pato", "Rato"], correta: "Bola", inimigo: "Serpente da Palavra", inimigoImg: "https://via.placeholder.com/150/3498db/FFFFFF?text=Letra-B" },
+        { pergunta: "Qual é a vogal de 'P É'?", respostas: ["A", "U", "E", "O"], correta: "E", inimigo: "Ogro das Vogais", inimigoImg: "https://via.placeholder.com/150/e67e22/FFFFFF?text=Vogal-E" },
+        { pergunta: "O que rima com 'MÃO'?", respostas: ["CARRO", "PÃO", "BIKE", "BALDE"], correta: "PÃO", inimigo: "Rima Risonha", inimigoImg: "https://via.placeholder.com/150/1abc9c/FFFFFF?text=Rima-2" },
+        { pergunta: "Quantas letras tem a palavra 'SOL'?", respostas: ["1", "2", "3", "4"], correta: "3", inimigo: "Sombra da Ortografia", inimigoImg: "https://via.placeholder.com/150/bdc3c7/FFFFFF?text=SOL-3" }
+    ],
+    NIVEL_2: [
+        { pergunta: "Qual é o plural de 'cão'?", respostas: ["cãe", "cãos", "cachorros", "cães"], correta: "cães", inimigo: "Dragão do Plural", inimigoImg: "https://via.placeholder.com/150/e84393/FFFFFF?text=Plural-1" },
+        { pergunta: "Qual é o sinônimo de 'alegre'?", respostas: ["triste", "feliz", "bravo", "lento"], correta: "feliz", inimigo: "Gênio dos Sinônimos", inimigoImg: "https://via.placeholder.com/150/95a5a6/FFFFFF?text=Sino-2" },
+        { pergunta: "Qual palavra é um 'substantivo próprio'?", respostas: ["mesa", "cachorro", "Brasil", "flor"], correta: "Brasil", inimigo: "Guardião da Gramática", inimigoImg: "https://via.placeholder.com/150/2c3e50/FFFFFF?text=Gram-3" },
+        { pergunta: "Qual palavra está escrita de forma correta?", respostas: ["exemplo", "ezemplo", "ezempro", "esemplo"], correta: "exemplo", inimigo: "Feiticeiro da Escrita", inimigoImg: "https://via.placeholder.com/150/f39c12/FFFFFF?text=Ort-4" }
+    ],
+    // NOVO NÍVEL
+    NIVEL_3: [
+        { pergunta: "Qual é o pretérito imperfeito do verbo 'ser' na 1ª pessoa do singular?", respostas: ["Eu fui", "Eu era", "Eu serei", "Eu sou"], correta: "Eu era", inimigo: "Bruxa dos Verbos", inimigoImg: IMG_VERBO },
+        { pergunta: "O que é uma 'oxítona'?", respostas: ["Sílaba forte no meio", "Sílaba forte na última posição", "Sílaba forte na penúltima", "Não tem sílaba forte"], correta: "Sílaba forte na última posição", inimigo: "Duende da Sílaba", inimigoImg: IMG_SILABA },
+        { pergunta: "Em qual palavra o 'H' é um dígrafo?", respostas: ["Hotel", "Homem", "Chave", "Honra"], correta: "Chave", inimigo: "Mímico da Letra", inimigoImg: IMG_MIMICO },
+        { pergunta: "Qual o substantivo coletivo de 'peixes'?", respostas: ["Nuvem", "Bando", "Cardume", "Colmeia"], correta: "Cardume", inimigo: "Pescador Esperto", inimigoImg: IMG_COLETIVO }
+    ],
+};
+
+// --- CONTEÚDO: BOSSES DE PORTUGUÊS ---
+
+const PERGUNTAS_BOSS_PORT_1 = [
+    { pergunta: "Qual palavra está escrita de forma correta?", respostas: ["kaza", "caza", "casa", "kassa"], correta: "casa" },
+    { pergunta: "Em qual frase a pontuação está correta?", respostas: ["Eu, comi bolo", "Eu comi bolo!", "Eu, comi, bolo", "Eu comi, bolo"], correta: "Eu comi bolo!" },
+    { pergunta: "Qual é o antônimo de 'claro'?", respostas: ["luminoso", "brilhante", "escuro", "transparente"], correta: "escuro" }
+];
+
+const BOSS_PORT_1 = { 
+    perguntas: PERGUNTAS_BOSS_PORT_1, 
+    inimigo: "GRANDE FANTASMA DA GRAMÁTICA (BOSS 1)", 
+    inimigoImg: IMG_BOSS_1, 
+    proximoNivel: 'NIVEL_2'
+};
+
+const PERGUNTAS_BOSS_PORT_2 = [
+    { pergunta: "Qual é a classe gramatical de 'rapidamente'?", respostas: ["Substantivo", "Verbo", "Adjetivo", "Advérbio"] , correta: "Advérbio"},
+    { pergunta: "Qual palavra NÃO tem acento tônico na última sílaba?", respostas: ["sofá", "avô", "pássaro", "parabéns"], correta: "pássaro" },
+    { pergunta: "Na frase 'O cão e o gato são amigos.', qual é o 'sujeito'?", respostas: ["O cão e o gato", "amigos", "são", "o gato"], correta: "O cão e o gato" }
+];
+
+const BOSS_PORT_2 = { 
+    perguntas: PERGUNTAS_BOSS_PORT_2, 
+    inimigo: "MINERVA, A DEUSA DA SINTAXE (BOSS 2)", 
+    inimigoImg: IMG_BOSS_2_PORT, 
+    proximoNivel: 'NIVEL_3' // MUDANÇA: AGORA LEVA PARA O NÍVEL 3
+};
+
+// NOVO BOSS FINAL DE PORTUGUÊS
+const PERGUNTAS_BOSS_PORT_3 = [
+    { pergunta: "Qual a função sintática da palavra 'muito' na frase: 'Ele é muito inteligente'?", respostas: ["Objeto direto", "Predicativo do sujeito", "Adjunto adverbial de intensidade", "Aposto"], correta: "Adjunto adverbial de intensidade" },
+    { pergunta: "Qual palavra está incorreta no plural?", respostas: ["Capitães", "Pães", "Cidadões", "Degraus"], correta: "Cidadões" },
+    { pergunta: "A oração 'Onde você mora?' é classificada como:", respostas: ["Declarativa", "Imperativa", "Exclamativa", "Interrogativa"], correta: "Interrogativa" },
+    { pergunta: "Qual destas palavras é um 'adjetivo pátrio'?", respostas: ["Pessoa", "Brasileiro", "Amigo", "Rápido"], correta: "Brasileiro" }
+];
+
+const BOSS_PORT_3 = { 
+    perguntas: PERGUNTAS_BOSS_PORT_3, 
+    inimigo: "O GUARDIÃO DA LÍNGUA PORTUGUESA (BOSS FINAL)", 
+    inimigoImg: IMG_BOSS_ULTIMATE, 
+    proximoNivel: null 
+};
+
+
+/**
+ * Cria a estrutura de estágios (pool de perguntas) para o mapa.
+ * **ATUALIZADO para 3 níveis e 3 Bosses.**
+ */
+function criarEstagios(perguntasPorNivel, boss1, boss2, boss3) { // NOVO PARÂMETRO
+    let estagios = [];
+
+    // NÍVEL 1
+    const nivel1Estagios = perguntasPorNivel.NIVEL_1
+        .map(p => ({
+            tipo: 'pergunta',
+            data: { ...JSON.parse(JSON.stringify(p)), vidaMax: 1, vidaAtual: 1, nivel: 'NIVEL_1' },
+            concluido: false
+        }))
+        .sort(() => Math.random() - 0.5)
+        .slice(0, ESTAGIOS_POR_NIVEL); 
+    
+    estagios.push(...nivel1Estagios);
+
+    // BOSS 1
+    estagios.push({
+        tipo: 'boss',
+        data: { 
+            inimigo: boss1.inimigo,           
+            inimigoImg: boss1.inimigoImg,     
+            perguntas: boss1.perguntas.map((p, index) => ({...p, id: index})),
+            vidaMax: boss1.perguntas.length, 
+            vidaAtual: boss1.perguntas.length,
+            proximoNivel: boss1.proximoNivel
+        },
+        concluido: false
+    });
+
+    // NÍVEL 2
+    const nivel2Estagios = perguntasPorNivel.NIVEL_2
+        .map(p => ({
+            tipo: 'pergunta',
+            data: { ...JSON.parse(JSON.stringify(p)), vidaMax: 1, vidaAtual: 1, nivel: 'NIVEL_2' }, 
+            concluido: false
+        }))
+        .sort(() => Math.random() - 0.5)
+        .slice(0, ESTAGIOS_POR_NIVEL); 
+    
+    estagios.push(...nivel2Estagios);
+
+    // BOSS 2
+    estagios.push({
+        tipo: 'boss',
+        data: { 
+            inimigo: boss2.inimigo,           
+            inimigoImg: boss2.inimigoImg,     
+            perguntas: boss2.perguntas.map((p, index) => ({...p, id: index})),
+            vidaMax: boss2.perguntas.length,
+            vidaAtual: boss2.perguntas.length,
+            proximoNivel: boss2.proximoNivel // Leva para NIVEL_3
+        },
+        concluido: false
+    });
+
+    // NOVO: NÍVEL 3
+    const nivel3Estagios = perguntasPorNivel.NIVEL_3
+        .map(p => ({
+            tipo: 'pergunta',
+            data: { ...JSON.parse(JSON.stringify(p)), vidaMax: 1, vidaAtual: 1, nivel: 'NIVEL_3' }, 
+            concluido: false
+        }))
+        .sort(() => Math.random() - 0.5)
+        .slice(0, ESTAGIOS_POR_NIVEL); 
+    
+    estagios.push(...nivel3Estagios);
+
+    // NOVO: BOSS 3 (FINAL)
+    estagios.push({
+        tipo: 'boss',
+        data: { 
+            inimigo: boss3.inimigo,           
+            inimigoImg: boss3.inimigoImg,     
+            perguntas: boss3.perguntas.map((p, index) => ({...p, id: index})),
+            vidaMax: boss3.perguntas.length,
+            vidaAtual: boss3.perguntas.length,
+            proximoNivel: boss3.proximoNivel // Será 'null' (Fim de Jogo)
+        },
+        concluido: false
+    });
+
+    return estagios;
+}
+
+
+// --- Funções de Leitura de Voz (Text-to-Speech) ---
+
+function falar(texto) {
+    if ('speechSynthesis' in window) {
+        speechSynthesis.cancel(); 
+        const utterance = new SpeechSynthesisUtterance(texto);
+        utterance.lang = 'pt-BR'; 
+        utterance.rate = 0.9; 
+        speechSynthesis.speak(utterance);
+    } else {
+        console.warn("API de Síntese de Fala não suportada neste navegador.");
+    }
+}
+
+function lerOpcoesDeResposta(opcoes) {
+    if ('speechSynthesis' in window) {
+        speechSynthesis.cancel(); 
+        let textoCompleto = "As opções são: ";
+        opcoes.forEach((opcao, index) => {
+            textoCompleto += `Opção ${index + 1}: ${opcao}. `;
+        });
+        falar(textoCompleto);
+    }
+}
+
+// --- Funções de Navegação e Reset ---
+
+function ocultarTodas() {
+    speechSynthesis.cancel();
+    pararCronometro();
+
+    document.getElementById('menu-inicial').style.display = 'none';
+    document.getElementById('selecao-mundo').style.display = 'none';
+    document.getElementById('tela-batalha').style.display = 'none';
+    document.getElementById('tela-mapa').style.display = 'none'; 
+}
+
+function mostrarSelecao() {
+    ocultarTodas();
+    
+    // Reseta estado do jogo globalmente
+    vidaJogador = vidaJogadorMax;
+    pontuacao = 0;
+    estagioAtualIndex = 0;
+    estagiosDoMundoAtual = [];
+    mundoAtual = '';
+    dificuldadeAtual = 'NIVEL_1'; 
+    perguntaAtualIndexBoss = 0; 
+    
+    // Atualiza o display visual (manter esta parte fora do DOM substituível)
+    document.getElementById('pontuacao-display').textContent = pontuacao;
+    document.getElementById('vida-jogador-texto').textContent = vidaJogador + ' / ' + vidaJogadorMax;
+    document.getElementById('vida-inimigo-texto').textContent = '0 / 0';
+    document.getElementById('vida-inimigo-bar').style.width = '0%';
+    document.getElementById('tempo-display').textContent = '--';
+    
+    // Garante que a estrutura da pergunta exista antes de usá-la.
+    const areaPergunta = document.getElementById('area-pergunta');
+    areaPergunta.innerHTML = '<div id="mensagem" class="msg-neutra">Selecione uma resposta para começar a batalha!</div><p id="pergunta-texto">Qual é a pergunta?</p><div id="opcoes-resposta"></div>';
+
+
+    document.getElementById('selecao-mundo').style.display = 'block';
+}
+
+
+function iniciarMundo(mundo) { // ATUALIZADO: Inclui BOSS 3
+    mundoAtual = mundo;
+    
+    if (mundo === 'matematica') {
+        estagiosDoMundoAtual = criarEstagios(PERGUNTAS_MAT, BOSS_MAT_1, BOSS_MAT_2, BOSS_MAT_3); 
+    } else if (mundo === 'portugues') {
+        estagiosDoMundoAtual = criarEstagios(PERGUNTAS_PORT, BOSS_PORT_1, BOSS_PORT_2, BOSS_PORT_3);
+    }
+
+    estagioAtualIndex = 0; 
+    mostrarMapa();
+}
+
+
+// --- Funções do Mapa de Progresso ---
+
+function mostrarMapa() {
+    ocultarTodas();
+    document.getElementById('tela-mapa').style.display = 'block';
+    
+    const mapaContainer = document.getElementById('mapa-container');
+    mapaContainer.innerHTML = ''; 
+    
+    const mundoNome = mundoAtual === 'matematica' ? 'Matemática' : 'Português';
+    document.getElementById('mapa-titulo').textContent = `Mundo da ${mundoNome} - Nível: ${dificuldadeAtual.replace('_', ' ')}`;
+
+    estagiosDoMundoAtual.forEach((estagio, index) => {
+        const isAtual = index === estagioAtualIndex;
+        const isConcluido = estagio.concluido;
+        const isBoss = estagio.tipo === 'boss';
+
+        const node = document.createElement('div');
+        node.className = 'mapa-node';
+        node.style.cssText = `
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 10px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: white; 
+            font-size: 14px;
+        `;
+
+        // Define a cor e o texto do nó
+        if (isConcluido) {
+            node.style.backgroundColor = '#2ecc71'; 
+            node.textContent = isBoss ? '🏆' : '✅';
+        } else if (isAtual) {
+            node.style.backgroundColor = isBoss ? '#e74c3c' : '#f39c12'; 
+            node.textContent = isBoss ? '🔥' : (index + 1); 
+            node.onclick = iniciarEstagioAtual; 
+        } else {
+            node.style.backgroundColor = '#bdc3c7'; 
+            node.textContent = isBoss ? 'B' : (index + 1);
+            node.style.cursor = 'default';
+        }
+        
+        // Adiciona um conector (linha)
+        if (index < estagiosDoMundoAtual.length - 1) {
+            const linha = document.createElement('div');
+            linha.style.cssText = `
+                width: 50px;
+                height: 5px;
+                background-color: ${estagiosDoMundoAtual[index].concluido ? '#2ecc71' : '#bdc3c7'};
+            `;
+            mapaContainer.appendChild(node);
+            mapaContainer.appendChild(linha);
+        } else {
+             mapaContainer.appendChild(node);
+        }
+    });
+
+    document.getElementById('botao-mapa-iniciar').textContent = `INICIAR ESTÁGIO ${estagioAtualIndex + 1}`;
+}
+
+
+function iniciarEstagioAtual() {
+    ocultarTodas();
+    document.getElementById('tela-batalha').style.display = 'block';
+    
+    // Define a imagem do herói com base no mundo
+    document.getElementById('        { pergunta: "Qual vem depois do número 9?", respostas: ["8", "10", "11", "90"], correta: "10", inimigo: "Contador Rápido", inimigoImg: "https://via.placeholder.com/150/2ecc71/FFFFFF?text=Cont-2" },
         { pergunta: "Qual forma tem 3 pontas (lados)?", respostas: ["Círculo", "Quadrado", "Triângulo", "Estrela"], correta: "Triângulo", inimigo: "Geometra Maluco", inimigoImg: "https://via.placeholder.com/150/f1c40f/FFFFFF?text=Forma-3" },
         { pergunta: "Se tenho 2 bonecas e ganho mais 2, com quantas eu fico?", respostas: ["3", "5", "4", "2"], correta: "4", inimigo: "Fada da Adição", inimigoImg: "https://via.placeholder.com/150/9b59b6/FFFFFF?text=Add-4" }
     ],
@@ -2009,6 +2760,7 @@ document.addEventListener('DOMContentLoaded', () => {
     ocultarTodas();
     document.getElementById('menu-inicial').style.display = 'block'; 
 });
+
 
 
 
