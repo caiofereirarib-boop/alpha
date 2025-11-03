@@ -1,6 +1,6 @@
 // =================================================================
 //                 CÓDIGO JAVASCRIPT COMPLETO (FINAL)
-//        (Estrutura de 10 Estágios: 8 perguntas + 2 Bosses)
+//        (10 Estágios, 2 Bosses, Perguntas Boss, Sistema de Dicas)
 // =================================================================
 
 // --- Variáveis Globais de Jogo ---
@@ -17,7 +17,7 @@ let estagioAtualIndex = 0; // Rastreia o estágio atual no mapa
 let estagiosDoMundoAtual = []; // Array de estágios do mundo escolhido
 
 
-// --- IMAGENS PRÉ-DEFINIDAS ---
+// --- IMAGENS PRÉ-DEFINIDAS (ADICIONANDO OS PROFESSORES) ---
 const IMAGENS_HEROI = {
     matematica: "https://via.placeholder.com/150/2ecc71/FFFFFF?text=Herói_Mat",
     portugues: "https://via.placeholder.com/150/3498db/FFFFFF?text=Herói_Port"
@@ -27,24 +27,31 @@ const IMG_VITORIA = "https://via.placeholder.com/150/f1c40f/FFFFFF?text=VITORIA"
 const IMG_INIMIGO_PADRAO = "https://via.placeholder.com/150/e74c3c/FFFFFF?text=INIMIGO";
 const IMG_BOSS = "https://via.placeholder.com/150/8e44ad/FFFFFF?text=BOSS-M";
 
+// 💡 NOVAS IMAGENS E DICAS DOS PROFESSORES
+const IMG_PROFESSOR_MAT = "https://via.placeholder.com/100/17a2b8/FFFFFF?text=Prof_Mat"; // Placeholder
+const IMG_PROFESSOR_PORT = "https://via.placeholder.com/100/dc3545/FFFFFF?text=Prof_Port"; // Placeholder
+
+const DICAS_PROFESSORES = {
+    matematica: "Lembre-se da ordem das operações: primeiro multiplicação/divisão, depois adição/subtração. Tente contar nos dedos!",
+    portugues: "Preste atenção nas letras iniciais e finais! Tente falar a palavra em voz alta para identificar as sílabas."
+};
+
 
 // --- CONTEÚDO: PERGUNTAS E INIMIGOS (PARA 4 FASES N1, 4 FASES N2/3) ---
 
 // ################### MATEMÁTICA ###################
-const PERGUNTAS_MAT_NIVEL_1 = [ // FÁCEIS (Usaremos as 4 primeiras)
+const PERGUNTAS_MAT_NIVEL_1 = [ 
     { pergunta: "Quanto é 3 + 1?", respostas: ["1", "3", "2", "4"], correta: "4", inimigo: "Monstro da Adição Simples", inimigoImg: "https://via.placeholder.com/150/e74c3c/FFFFFF?text=Add-1", vida: 1 },
     { pergunta: "Qual vem depois do número 9?", respostas: ["8", "10", "11", "90"], correta: "10", inimigo: "Contador Rápido", inimigoImg: "https://via.placeholder.com/150/2ecc71/FFFFFF?text=Cont-2", vida: 1 },
     { pergunta: "Qual forma tem 3 pontas (lados)?", respostas: ["Círculo", "Quadrado", "Triângulo", "Estrela"], correta: "Triângulo", inimigo: "Geometra Maluco", inimigoImg: "https://via.placeholder.com/150/f1c40f/FFFFFF?text=Forma-3", vida: 1 },
     { pergunta: "Se tenho 2 bonecas e ganho mais 2, com quantas eu fico?", respostas: ["3", "5", "4", "2"], correta: "4", inimigo: "Fada da Adição", inimigoImg: "https://via.placeholder.com/150/9b59b6/FFFFFF?text=Add-4", vida: 1 },
-    // As outras 6 perguntas N1 serão ignoradas pela lógica de criação de estágios.
 ];
 
-const PERGUNTAS_MAT_NIVEL_2_E_3 = [ // MÉDIAS/DIFÍCEIS (Usaremos as 4 primeiras)
+const PERGUNTAS_MAT_NIVEL_2_E_3 = [ 
     { pergunta: "Quanto é 2 x 3?", respostas: ["4", "5", "6", "7"], correta: "6", inimigo: "Multiplicador Fantasma", inimigoImg: "https://via.placeholder.com/150/6f42c1/FFFFFF?text=Mult-1", vida: 1 },
     { pergunta: "Qual é o resultado de 10 / 2?", respostas: ["3", "4", "5", "6"], correta: "5", inimigo: "Divisor Místico", inimigoImg: "https://via.placeholder.com/150/fd7e14/FFFFFF?text=Div-1", vida: 1 },
     { pergunta: "O que é um número par?", respostas: ["Ímpar", "Um número que divide por 2", "Um número que não divide por 2", "Zero"], correta: "Um número que divide por 2", inimigo: "Duende da Paridade", inimigoImg: "https://via.placeholder.com/150/e83e8c/FFFFFF?text=Par", vida: 1 },
     { pergunta: "Qual o resultado de 4 + 4 - 2?", respostas: ["8", "6", "7", "5"], correta: "6", inimigo: "Mago dos Cálculos Avançados", inimigoImg: "https://via.placeholder.com/150/000000/FFFFFF?text=Calc-4", vida: 1 },
-    // As outras 6 perguntas N2/3 serão ignoradas.
 ];
 
 // ESTRUTURA DOS BOSSES
@@ -71,20 +78,18 @@ const BOSS_MAT_2 = {
 };
 
 // ################### PORTUGUÊS ###################
-const PERGUNTAS_PORT_NIVEL_1 = [ // FÁCEIS (Usaremos as 4 primeiras)
+const PERGUNTAS_PORT_NIVEL_1 = [ 
     { pergunta: "Qual palavra começa com a letra 'B'?", respostas: ["Casa", "Bola", "Pato", "Rato"], correta: "Bola", inimigo: "Serpente da Palavra", inimigoImg: "https://via.placeholder.com/150/3498db/FFFFFF?text=Letra-B", vida: 1 },
     { pergunta: "Qual é a vogal de 'P É'?", respostas: ["A", "U", "E", "O"], correta: "E", inimigo: "Ogro das Vogais", inimigoImg: "https://via.placeholder.com/150/e67e22/FFFFFF?text=Vogal-E", vida: 1 },
     { pergunta: "O que rima com 'SAPATO'?", respostas: ["MÃO", "DEDO", "PATO", "RUA"], correta: "PATO", inimigo: "Rima Risonha", inimigoImg: "https://via.placeholder.com/150/1abc9c/FFFFFF?text=Rima-2", vida: 1 },
     { pergunta: "Quantas letras tem a palavra 'SOL'?", respostas: ["1", "2", "3", "4"], correta: "3", inimigo: "Sombra da Ortografia", inimigoImg: "https://via.placeholder.com/150/bdc3c7/FFFFFF?text=SOL-3", vida: 1 },
-    // As outras 6 perguntas N1 serão ignoradas.
 ];
 
-const PERGUNTAS_PORT_NIVEL_2_E_3 = [ // MÉDIAS/DIFÍCEIS (Usaremos as 4 primeiras)
+const PERGUNTAS_PORT_NIVEL_2_E_3 = [ 
     { pergunta: "Qual palavra está escrita de forma correta?", respostas: ["kaza", "caza", "casa", "kassa"], correta: "casa", inimigo: "Copiador Inimigo", inimigoImg: "https://via.placeholder.com/150/e74c3c/FFFFFF?text=Ortografia", vida: 1 },
     { pergunta: "Qual palavra tem 3 vogais?", respostas: ["ARARA", "ARCO", "CASA", "PORTA"], correta: "ARARA", inimigo: "Caçador de Vogais", inimigoImg: "https://via.placeholder.com/150/34495e/FFFFFF?text=Vogais-3", vida: 1 },
     { pergunta: "Qual é o plural de 'CARRO'?", respostas: ["CARROS", "CARROES", "CARRA", "CARRO"], correta: "CARROS", inimigo: "Rei do Plural", inimigoImg: "https://via.placeholder.com/150/9b59b6/FFFFFF?text=Plural", vida: 1 },
     { pergunta: "Qual palavra é um 'adjetivo'?", respostas: ["Correr", "Bonito", "Mesa", "Dois"], correta: "Bonito", inimigo: "Feiticeiro dos Adjetivos", inimigoImg: "https://via.placeholder.com/150/16a085/FFFFFF?text=Adj", vida: 1 },
-    // As outras 6 perguntas N2/3 serão ignoradas.
 ];
 
 // ESTRUTURA DOS BOSSES
@@ -112,9 +117,8 @@ const BOSS_PORT_2 = {
 
 
 /**
- * CRIAÇÃO DE ESTÁGIOS APRIMORADA (Ajustada para 10 Estágios)
- * Cria a estrutura de 10 estágios (8 perguntas + 2 Bosses).
- * Padrão: 4 Perguntas Nível 1 -> BOSS 1 -> 4 Perguntas Nível 2/3 -> BOSS 2
+ * CRIAÇÃO DE ESTÁGIOS APRIMORADA (10 Estágios)
+ * Padrão: 4 Perguntas Nível 1 -> BOSS 1 (Estágio 5) -> 4 Perguntas Nível 2/3 -> BOSS 2 (Estágio 10)
  */
 function criarEstagios(perguntasN1, perguntasN2e3, boss1, boss2) {
     
@@ -122,23 +126,48 @@ function criarEstagios(perguntasN1, perguntasN2e3, boss1, boss2) {
     const poolN1 = perguntasN1
         .map(p => ({ tipo: 'pergunta', data: JSON.parse(JSON.stringify(p)), concluido: false }))
         .sort(() => Math.random() - 0.5)
-        .slice(0, 4); // <--- AQUI ESTÁ O NOVO LIMITE: 4 PERGUNTAS
+        .slice(0, 4); 
 
     // 2. Embaralha e seleciona as 4 perguntas dos Níveis 2/3 (Médio/Difícil)
     const poolN2e3 = perguntasN2e3
         .map(p => ({ tipo: 'pergunta', data: JSON.parse(JSON.stringify(p)), concluido: false }))
         .sort(() => Math.random() - 0.5)
-        .slice(0, 4); // <--- AQUI ESTÁ O NOVO LIMITE: 4 PERGUNTAS
+        .slice(0, 4); 
 
-    // 3. Monta o mapa completo (Total: 4 + 1 + 4 + 1 = 10 estágios)
+    // 3. Monta o mapa completo 
     const estagios = [
-        ...poolN1, // Estágios 1-4
+        ...poolN1, 
         { tipo: 'boss', data: JSON.parse(JSON.stringify(boss1)), concluido: false, vidaAtual: boss1.vida, vidaMax: boss1.vida }, // BOSS 1 (Estágio 5)
-        ...poolN2e3, // Estágios 6-9
+        ...poolN2e3, 
         { tipo: 'boss', data: JSON.parse(JSON.stringify(boss2)), concluido: false, vidaAtual: boss2.vida, vidaMax: boss2.vida } // BOSS 2 (Estágio 10)
     ];
     
     return estagios;
+}
+
+
+// --- Funções de Dicas do Professor (NOVO) ---
+
+function mostrarProfessorDica() {
+    const imagemProfessor = mundoAtual === 'matematica' ? IMG_PROFESSOR_MAT : IMG_PROFESSOR_PORT;
+    const dicaTexto = DICAS_PROFESSORES[mundoAtual];
+
+    // Cria os elementos do professor (Você deve ter a div 'area-professor' no seu HTML)
+    const areaProfessor = document.getElementById('area-professor');
+    areaProfessor.innerHTML = `
+        <img src="${imagemProfessor}" alt="Professor Dica" id="professor-img">
+        <div id="professor-balao">
+            <p><strong>Professor diz:</strong> ${dicaTexto}</p>
+        </div>
+    `;
+    areaProfessor.style.display = 'flex'; // Exibe a área (se estiver oculta no CSS/HTML)
+    falar(`O professor diz: ${dicaTexto}`);
+
+    // Esconde o professor após 4 segundos
+    setTimeout(() => {
+        areaProfessor.style.display = 'none';
+        areaProfessor.innerHTML = '';
+    }, 4000);
 }
 
 
@@ -199,7 +228,6 @@ function mostrarSelecao() {
     // Garante que a estrutura da pergunta exista antes de usá-la.
     const areaPergunta = document.getElementById('area-pergunta');
     areaPergunta.innerHTML = '<div id="mensagem" class="msg-neutra">Selecione uma resposta para começar a batalha!</div><p id="pergunta-texto">Qual é a pergunta?</p><div id="opcoes-resposta"></div>';
-
 
     document.getElementById('selecao-mundo').style.display = 'block';
 }
@@ -262,6 +290,12 @@ function mostrarMapa() {
             color: white; 
         `;
 
+        // Verifica se o estágio está no nível de dificuldade pós-Boss 1 (após o índice 4, que é o Boss 1)
+        if (index > 4) {
+            node.style.border = '3px dashed #FFD700'; // Borda para indicar dificuldade maior
+        }
+
+
         if (isConcluido) {
             node.style.backgroundColor = '#2ecc71'; /* Verde para concluído */
             node.textContent = '✅';
@@ -307,7 +341,6 @@ function iniciarEstagioAtual() {
 // --- Funções de Batalha (Core) ---
 
 function proximaPergunta() {
-    // Pega o estágio ATUAL
     const estagio = estagiosDoMundoAtual[estagioAtualIndex];
 
     if (!estagio) {
@@ -325,12 +358,9 @@ function proximaPergunta() {
     let vidaInimigoAtual, vidaInimigoMax;
     
     if (estagio.tipo === 'boss') {
-        // LÓGICA DO BOSS: Pega a pergunta correta com base na vida restante.
-        // Se o boss tem 3 vidas, a fase é a 0 (index = vidaMax - vidaAtual).
         const faseIndex = estagio.data.vida - estagio.vidaAtual;
         dadosDaPergunta = estagio.data.perguntasFases[faseIndex];
         
-        // Adiciona informações do Boss aos dados da pergunta para uso global
         dadosDaPergunta.inimigo = estagio.data.inimigo;
         dadosDaPergunta.inimigoImg = estagio.data.inimigoImg;
         dadosDaPergunta.vidaBoss = estagio.vidaAtual;
@@ -339,7 +369,7 @@ function proximaPergunta() {
         vidaInimigoAtual = estagio.vidaAtual;
         vidaInimigoMax = estagio.vidaMax;
     } else {
-        // LÓGICA DA PERGUNTA NORMAL
+        // Pergunta Normal
         dadosDaPergunta = estagio.data;
         dadosDaPergunta.vidaBoss = estagio.data.vida; // 1
         dadosDaPergunta.vidaBossMax = estagio.data.vida; // 1
@@ -348,7 +378,6 @@ function proximaPergunta() {
         vidaInimigoMax = estagio.data.vida;
     }
     
-    // Define a perguntaAtual para o loop de verificação
     perguntaAtual = dadosDaPergunta;
 
     pararCronometro();
@@ -360,13 +389,11 @@ function proximaPergunta() {
     document.getElementById('nome-inimigo').textContent = perguntaAtual.inimigo;
     document.getElementById('inimigo-img').src = perguntaAtual.inimigoImg || IMG_INIMIGO_PADRAO;
 
-    // A vida do inimigo é atualizada com os dados do estágio
+    // Atualiza a vida do inimigo na tela
     document.getElementById('vida-inimigo-texto').textContent = vidaInimigoAtual + ' / ' + vidaInimigoMax;
-    // Força a atualização da barra aqui para mostrar o estado inicial do Boss
     const barraInimigo = document.getElementById('vida-inimigo-bar');
     const percentualInimigo = vidaInimigoMax > 0 ? (vidaInimigoAtual / vidaInimigoMax) * 100 : 0;
     barraInimigo.style.width = percentualInimigo + '%';
-    barraInimigo.style.backgroundColor = vidaInimigoAtual > (vidaInimigoMax / 2) ? '#e74c3c' : (vidaInimigoAtual > 0 ? '#e67e22' : '#c0392b'); 
     
     atualizarStatus();
     document.getElementById('mensagem').className = 'msg-neutra';
@@ -422,13 +449,13 @@ function verificarResposta(respostaSelecionada) {
     const timeout = respostaSelecionada === null;
 
     if (acertou) {
-        // Reduz a vida do Boss ou da Pergunta Normal
+        // Se acertou
         if (estagio.tipo === 'boss') {
             estagio.vidaAtual--;
             adicionarPontuacao(true);
             mensagemElemento.textContent = `🎉 Acertou! Dano no ${perguntaAtual.inimigo}! O Boss perdeu uma vida!`;
         } else {
-            estagio.data.vida--; // Pergunta normal
+            estagio.data.vida--; 
             adicionarPontuacao(false);
             mensagemElemento.textContent = `🎉 Acertou! ${perguntaAtual.inimigo} derrotado!`;
         }
@@ -436,17 +463,24 @@ function verificarResposta(respostaSelecionada) {
         mensagemElemento.className = 'msg-acerto';
         falar("Você acertou! Muito bem!");
         
-    } else if (timeout) {
+    } else {
+        // Se errou ou tempo esgotou
         vidaJogador--;
-        mensagemElemento.className = 'msg-erro';
-        mensagemElemento.textContent = `⏰ Tempo Esgotado! O ${perguntaAtual.inimigo} te atacou!`;
-        falar("Tempo esgotado! Você perdeu vida.");
-    } 
-    else {
-        vidaJogador--;
-        mensagemElemento.className = 'msg-erro';
-        mensagemElemento.textContent = `❌ Ops! O ${perguntaAtual.inimigo} te atacou!`;
-        falar("Resposta errada. Você perdeu vida.");
+        
+        if (timeout) {
+            mensagemElemento.className = 'msg-erro';
+            mensagemElemento.textContent = `⏰ Tempo Esgotado! O ${perguntaAtual.inimigo} te atacou!`;
+            falar("Tempo esgotado! Você perdeu vida.");
+        } else {
+            mensagemElemento.className = 'msg-erro';
+            mensagemElemento.textContent = `❌ Ops! O ${perguntaAtual.inimigo} te atacou!`;
+            falar("Resposta errada. Você perdeu vida.");
+        }
+        
+        // 💡 AÇÃO DO PROFESSOR: DICA APÓS ERRO/TIMEOUT
+        if (vidaJogador > 0) {
+            mostrarProfessorDica();
+        }
     }
 
     atualizarStatus();
@@ -488,9 +522,9 @@ function verificarFimTurno(turnoFinalizado) {
 
         setTimeout(() => {
             if (estagioAtualIndex < estagiosDoMundoAtual.length) {
-                mostrarMapa(); // Volta para o mapa antes da próxima batalha
+                mostrarMapa(); 
             } else {
-                proximaPergunta(); // Chama para exibir a tela de vitória final (BOSS 2 derrotado)
+                proximaPergunta(); 
             }
         }, 1500); 
 
@@ -500,7 +534,6 @@ function verificarFimTurno(turnoFinalizado) {
         document.getElementById('mensagem').textContent = `O Boss ainda está forte! Ataque de novo! (Vida: ${estagio.vidaAtual})`;
         falar("O chefe resistiu! Qual a próxima resposta?");
         
-        // Simplesmente recarrega a próxima pergunta do Boss (que será diferente)
         proximaPergunta(); 
 
     } else if (turnoFinalizado === false && vidaJogador > 0) {
@@ -517,7 +550,6 @@ function verificarFimTurno(turnoFinalizado) {
 // --- Funções Auxiliares (Pontuação, Status, Tempo) ---
 
 function atualizarStatus() {
-    // Para perguntas normais, vidaAtual é a vida restante. Para Boss, é a vida do Boss no estágio.
     const estagio = estagiosDoMundoAtual[estagioAtualIndex];
     let vidaInimigoAtual = 0;
     let vidaInimigoMax = 1; 
@@ -527,7 +559,6 @@ function atualizarStatus() {
             vidaInimigoAtual = estagio.vidaAtual;
             vidaInimigoMax = estagio.vidaMax;
         } else {
-            // Pergunta normal
             vidaInimigoAtual = estagio.data.vida;
             vidaInimigoMax = 1; 
         }
@@ -575,21 +606,4 @@ function adicionarPontuacao(eUmBoss) {
         pontuacao += PONTOS_POR_BOSS;
     } else {
         const tempoRestante = parseInt(document.getElementById('tempo-display').textContent) || 0;
-        // Adiciona bônus por tempo para perguntas normais
-        pontuacao += PONTOS_POR_ACERTO + (tempoRestante > 0 ? tempoRestante * 5 : 0);
-    }
-    document.getElementById('pontuacao-display').textContent = pontuacao;
-}
-
-
-// Inicializa o jogo ao carregar a página
-document.addEventListener('DOMContentLoaded', () => {
-    ocultarTodas();
-    document.getElementById('menu-inicial').style.display = 'block'; 
-
-    // Garante que o botão "Começar a Jogar" funcione (prioriza o ID "btn-comecar" que você mencionou)
-    const botaoComecar = document.getElementById('btn-comecar') || document.getElementById('botao-comecar'); 
-    if (botaoComecar) {
-        botaoComecar.addEventListener('click', mostrarSelecao);
-    }
-});
+        pontuacao += PONT
