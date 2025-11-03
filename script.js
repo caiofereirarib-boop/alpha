@@ -156,7 +156,7 @@ function criarEstagios(perguntasPorNivel, boss1, boss2, boss3) {
         tipo: 'boss',
         data: { 
             inimigo: boss1.inimigo,           
-            inimigoImg: boss1.inimigoImg,     
+            inimigoImg: boss1.inimigoImg,      
             perguntas: boss1.perguntas.map((p, index) => ({...p, id: index})),
             vidaMax: boss1.perguntas.length, 
             vidaAtual: boss1.perguntas.length,
@@ -182,7 +182,7 @@ function criarEstagios(perguntasPorNivel, boss1, boss2, boss3) {
         tipo: 'boss',
         data: { 
             inimigo: boss2.inimigo,           
-            inimigoImg: boss2.inimigoImg,     
+            inimigoImg: boss2.inimigoImg,      
             perguntas: boss2.perguntas.map((p, index) => ({...p, id: index})),
             vidaMax: boss2.perguntas.length,
             vidaAtual: boss2.perguntas.length,
@@ -208,7 +208,7 @@ function criarEstagios(perguntasPorNivel, boss1, boss2, boss3) {
         tipo: 'boss',
         data: { 
             inimigo: boss3.inimigo,           
-            inimigoImg: boss3.inimigoImg,     
+            inimigoImg: boss3.inimigoImg,      
             perguntas: boss3.perguntas.map((p, index) => ({...p, id: index})),
             vidaMax: boss3.perguntas.length,
             vidaAtual: boss3.perguntas.length,
@@ -288,8 +288,9 @@ function mostrarMenuInicial() {
 
 function mostrarSelecao() {
     ocultarTodas();
-    // Reutiliza o reset do menu inicial para garantir que o estado do jogo está limpo
-    mostrarMenuInicial(); 
+    // Limpa o estado do jogo e mostra a seleção de mundo
+    mostrarMenuInicial(); // Faz o reset completo
+    document.getElementById('menu-inicial').style.display = 'none'; // Oculta o menu inicial
     document.getElementById('selecao-mundo').style.display = 'block';
 }
 
@@ -387,6 +388,72 @@ function iniciarEstagioAtual() {
 // BLOCO 8: FUNÇÕES DE BATALHA (Lógica Central do Quiz)
 // ========================================================================
 
+function proximaPergunta() {
+    const estagio = estagiosDoMundoAtual[estagioAtualIndex];
+
+    if (!estagio) {
+        // Vitória final
+        document.getElementById('inimigo-img').src = IMG_VITORIA;
+        document.getElementById('mensagem').className = 'msg-acerto';
+        document.getElementById('mensagem').textContent = `🏆 VITÓRIA! Você VENCEU TUDO! Pontuação Final: ${pontuacao} pontos!`;
+        document.getElementById('area-pergunta').innerHTML = `<button onclick="mostrarSelecao()">Jogar Novamente</button>`;
+        return;
+    }
+    
+    const isBoss = estagio.tipo === 'boss';
+    let dataPergunta;
+
+    if (isBoss) {
+        // Pega a pergunta atual dentro do Boss
+        dataPergunta = estagio.data.perguntas[perguntaAtualIndexBoss];
+        if (!dataPergunta) {
+             // Caso todas as perguntas do Boss tenham sido feitas, mas o estágio ainda não foi marcado como concluído (erro de lógica)
+             verificarFimTurno(true);
+             return;
+        }
+    } else {
+        // Pergunta normal
+        dataPergunta = estagio.data;
+    }
+    
+    // Define a pergunta atual (global) e os dados de exibição
+    perguntaAtual = dataPergunta;
+
+    pararCronometro();
+    speechSynthesis.cancel();
+    
+    const perguntaTexto = document.getElementById('pergunta-texto');
+    const opcoesDiv = document.getElementById('opcoes-resposta');
+    if (!perguntaTexto || !opcoesDiv) {
+        console.error("Erro fatal: Elementos de pergunta ou opções não encontrados. Reiniciando...");
+        mostrarSelecao(); 
+        return;
+    }
+
+    // Atualiza o nome e imagem do inimigo/boss
+    const nomeInimigo = isBoss ? estagio.data.inimigo : dataPergunta.inimigo;
+    const imagemInimigo = isBoss ? estagio.data.inimigoImg : dataPergunta.inimigoImg || IMG_INIMIGO_PADRAO;
+    
+    document.getElementById('nome-inimigo').textContent = nomeInimigo;
+    document.getElementById('inimigo-img').src = imagemInimigo;
+
+    atualizarStatus();
+    document.getElementById('mensagem').className = 'msg-neutra';
+    document.getElementById('mensagem').textContent = isBoss 
+        ? `BOSS (${estagio.data.vidaAtual}/${estagio.data.vidaMax}): ${nomeInimigo} - Perg. ${perguntaAtualIndexBoss + 1}` 
+        : `Enfrentando: ${nomeInimigo}. Clique para ouvir a pergunta!`;
+    
+    // PREENCHE OS ELEMENTOS:
+    perguntaTexto.textContent = perguntaAtual.pergunta;
+    opcoesDiv.innerHTML = '';
+    
+    // Certifique-se de que a variável de respostas está sendo usada corretamente
+    const respostasEmbaralhadas = [...perguntaAtual.respostas].sort(() => Math.random() - 0.5);
+    
+    // Botões de Ouvir
+    const btnOuvirPergunta = document.createElement('button');
+    btnOuvirPergunta.textContent = '🔊 Ouvir Pergunta';
+    btnOuvirPergunta.style.marginBottom = '15px';
     btnOuvirPergunta.onclick = () => falar(perguntaAtual.pergunta);
     opcoesDiv.appendChild(btnOuvirPergunta);
     
@@ -436,7 +503,12 @@ function verificarResposta(respostaSelecionada) {
         
         adicionarPontuacao(isBoss);
         mensagemElemento.className = 'msg-acerto';
-        mensagemElemento.textContent = `🎉 Acertou! ${isBoss ? `Boss perdeu uma vida! (${estagio.data.vidaAtual} restantes)` : 'Inimigo derrotado!'}`;
+        
+        let msgAcerto = isBoss 
+            ? `🎉 Acertou! Boss perdeu uma vida! (${estagio.data.vidaAtual} restantes)` 
+            : '🎉 Acertou! Inimigo derrotado!';
+
+        mensagemElemento.textContent = msgAcerto;
         falar("Você acertou! Muito bem!");
         
 
@@ -473,8 +545,10 @@ function verificarFimTurno(acertou) {
     let inimigoDerrotado = false;
     
     if (isBoss) {
+        // O Boss é derrotado quando a vidaAtual chega a 0
         inimigoDerrotado = estagio.data.vidaAtual <= 0;
     } else {
+        // O inimigo normal é derrotado com 1 acerto
         inimigoDerrotado = acertou;
     }
 
@@ -522,7 +596,7 @@ function verificarFimTurno(acertou) {
         }, 1000);
 
     } else {
-        // INIMIGO VIVO (Jogador errou): Mantém a mesma pergunta
+        // INIMIGO VIVO (Jogador errou ou Timeout): Mantém a mesma pergunta
         document.getElementById('mensagem').className = 'msg-neutra';
         document.getElementById('mensagem').textContent = "Sua vez! Tente a resposta correta para atacar!";
         
@@ -547,8 +621,9 @@ function atualizarStatus() {
         vidaInimigoAtual = estagio.data.vidaAtual;
         vidaInimigoMax = estagio.data.vidaMax;
     } else if (estagio) {
-        vidaInimigoAtual = estagio.data.vidaAtual || 1;
-        vidaInimigoMax = estagio.data.vidaMax || 1; 
+        // Para estágios normais, a vida é 1/1
+        vidaInimigoAtual = 1; 
+        vidaInimigoMax = 1; 
     } else {
         vidaInimigoAtual = 0;
         vidaInimigoMax = 0;
@@ -615,4 +690,3 @@ document.addEventListener('DOMContentLoaded', () => {
     // Apenas garante que a função de iniciar o menu é chamada ao carregar
     mostrarMenuInicial();
 });
-                                                    }
