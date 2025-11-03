@@ -563,4 +563,11 @@ function adicionarPontuacao(eUmBoss) {
 document.addEventListener('DOMContentLoaded', () => {
     ocultarTodas();
     document.getElementById('menu-inicial').style.display = 'block'; 
+
+    // ✅ CORREÇÃO ADICIONADA: Adiciona o Event Listener para o botão "Começar a Jogar"
+    // ASSUME que o botão tem o ID "botao-comecar"
+    const botaoComecar = document.getElementById('botao-comecar'); 
+    if (botaoComecar) {
+        botaoComecar.addEventListener('click', mostrarSelecao);
+    }
 });
