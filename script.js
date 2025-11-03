@@ -1,6 +1,6 @@
 // =================================================================
 //                 CÓDIGO JAVASCRIPT COMPLETO (FINAL)
-//        (Professor Corrigido, Imagens Locais e Tempo Aumentado)
+//        (Com URLs da Web para TODOS os Inimigos e Bosses)
 // =================================================================
 
 // --- Variáveis Globais de Jogo ---
@@ -10,26 +10,26 @@ let mundoAtual = '';
 let perguntaAtual = {};
 let pontuacao = 0;
 let cronometro;
-const TEMPO_LIMITE = 25; // TEMPO AUMENTADO PARA 25 SEGUNDOS!
+const TEMPO_LIMITE = 25; // 25 segundos para responder
 const PONTOS_POR_ACERTO = 100;
 const PONTOS_POR_BOSS = 300;
-let estagioAtualIndex = 0; // Rastreia o estágio atual no mapa
-let estagiosDoMundoAtual = []; // Array de estágios do mundo escolhido
+let estagioAtualIndex = 0; 
+let estagiosDoMundoAtual = []; 
 
 
-// --- IMAGENS PRÉ-DEFINIDAS (USANDO CAMINHOS LOCAIS) ---
+// --- IMAGENS PRÉ-DEFINIDAS (HERÓIS E PROFESSORES - USANDO URLs DA WEB) ---
 
 // Imagens do Herói (Player)
 const IMAGENS_HEROI = {
-    matematica: "img/gato.png",  // Ajuste se sua pasta/nome for diferente
-    portugues: "img/gato.png"   // Ajuste se sua pasta/nome for diferente
+    matematica: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c7/Knight_illustration.svg/150px-Knight_illustration.svg.png", // Cavaleiro
+    portugues: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d4/Female_mage_illustration.svg/150px-Female_mage_illustration.svg.png" // Maga
 };
-// Imagens de Fim de Jogo (Ajuste se quiser usar arquivos locais)
-const IMG_GAME_OVER = "./imagens/game_over.png";
-const IMG_VITORIA = "./imagens/vitoria.png";
-// Professor e Dicas (Ajuste se quiser usar arquivos locais)
-const IMG_PROFESSOR_MAT = "img/macaco.png"; 
-const IMG_PROFESSOR_PORT = "img/coruja.png"; 
+// Imagens de Fim de Jogo
+const IMG_GAME_OVER = "https://cdn.pixabay.com/photo/2014/12/10/11/17/game-over-562947_1280.png";
+const IMG_VITORIA = "https://cdn.pixabay.com/photo/2016/09/08/11/49/trophy-1654160_1280.png";
+// Professor e Dicas
+const IMG_PROFESSOR_MAT = "https://cdn.pixabay.com/photo/2016/04/01/10/58/teacher-1300067_1280.png"; // Professor de Óculos
+const IMG_PROFESSOR_PORT = "https://cdn.pixabay.com/photo/2021/01/30/17/43/old-woman-5965410_1280.png"; // Professora Sábia
 
 const DICAS_PROFESSORES = {
     matematica: "Lembre-se da ordem das operações: primeiro multiplicação/divisão, depois adição/subtração. Tente contar nos dedos!",
@@ -37,27 +37,27 @@ const DICAS_PROFESSORES = {
 };
 
 
-// --- CONTEÚDO: PERGUNTAS E INIMIGOS (COM IMAGENS LOCAIS) ---
-// *Nota: Mantenha a estrutura de pastas e nomes de arquivo em minúsculas para o GitHub Pages*
+// --- CONTEÚDO: PERGUNTAS E INIMIGOS (COM URLs da Web) ---
 
 // ################### MATEMÁTICA ###################
 const PERGUNTAS_MAT_NIVEL_1 = [ 
-    { pergunta: "Quanto é 3 + 1?", respostas: ["1", "3", "2", "4"], correta: "4", inimigo: "Monstro da Adição Simples", inimigoImg: "./imagens/mat_n1_1.png", vida: 1 },
-    { pergunta: "Qual vem depois do número 9?", respostas: ["8", "10", "11", "90"], correta: "10", inimigo: "Contador Rápido", inimigoImg: "./imagens/mat_n1_2.png", vida: 1 },
-    { pergunta: "Qual forma tem 3 pontas (lados)?", respostas: ["Círculo", "Quadrado", "Triângulo", "Estrela"], correta: "Triângulo", inimigo: "Geometra Maluco", inimigoImg: "./imagens/mat_n1_3.png", vida: 1 },
-    { pergunta: "Se tenho 2 bonecas e ganho mais 2, com quantas eu fico?", respostas: ["3", "5", "4", "2"], correta: "4", inimigo: "Fada da Adição", inimigoImg: "./imagens/mat_n1_4.png", vida: 1 },
+    { pergunta: "Quanto é 3 + 1?", respostas: ["1", "3", "2", "4"], correta: "4", inimigo: "Monstro da Adição Simples", inimigoImg: "https://cdn.pixabay.com/photo/2016/04/01/10/18/ogre-1299464_1280.png", vida: 1 },
+    { pergunta: "Qual vem depois do número 9?", respostas: ["8", "10", "11", "90"], correta: "10", inimigo: "Contador Rápido", inimigoImg: "https://cdn.pixabay.com/photo/2016/04/01/11/04/fairy-1300267_1280.png", vida: 1 },
+    { pergunta: "Qual forma tem 3 pontas (lados)?", respostas: ["Círculo", "Quadrado", "Triângulo", "Estrela"], correta: "Triângulo", inimigo: "Geometra Maluco", inimigoImg: "https://cdn.pixabay.com/photo/2016/04/01/10/01/dragon-1299292_1280.png", vida: 1 },
+    { pergunta: "Se tenho 2 bonecas e ganho mais 2, com quantas eu fico?", respostas: ["3", "5", "4", "2"], correta: "4", inimigo: "Fada da Adição", inimigoImg: "https://cdn.pixabay.com/photo/2016/04/01/11/12/goblin-1300373_1280.png", vida: 1 },
 ];
 
 const PERGUNTAS_MAT_NIVEL_2_E_3 = [ 
-    { pergunta: "Quanto é 2 x 3?", respostas: ["4", "5", "6", "7"], correta: "6", inimigo: "Multiplicador Fantasma", inimigoImg: "./imagens/mat_n2_1.png", vida: 1 },
-    { pergunta: "Qual é o resultado de 10 / 2?", respostas: ["3", "4", "5", "6"], correta: "5", inimigo: "Divisor Místico", inimigoImg: "./imagens/mat_n2_2.png", vida: 1 },
-    { pergunta: "O que é um número par?", respostas: ["Ímpar", "Um número que divide por 2", "Um número que não divide por 2", "Zero"], correta: "Um número que divide por 2", inimigo: "Duende da Paridade", inimigoImg: "./imagens/mat_n2_3.png", vida: 1 },
-    { pergunta: "Qual o resultado de 4 + 4 - 2?", respostas: ["8", "6", "7", "5"], correta: "6", inimigo: "Mago dos Cálculos Avançados", inimigoImg: "./imagens/mat_n2_4.png", vida: 1 },
+    { pergunta: "Quanto é 2 x 3?", respostas: ["4", "5", "6", "7"], correta: "6", inimigo: "Multiplicador Fantasma", inimigoImg: "https://cdn.pixabay.com/photo/2016/04/01/10/26/ghost-1299616_1280.png", vida: 1 },
+    { pergunta: "Qual é o resultado de 10 / 2?", respostas: ["3", "4", "5", "6"], correta: "5", inimigo: "Divisor Místico", inimigoImg: "https://cdn.pixabay.com/photo/2016/04/01/10/19/alien-1299484_1280.png", vida: 1 },
+    { pergunta: "O que é um número par?", respostas: ["Ímpar", "Um número que divide por 2", "Um número que não divide por 2", "Zero"], correta: "Um número que divide por 2", inimigo: "Duende da Paridade", inimigoImg: "https://cdn.pixabay.com/photo/2016/04/01/10/06/elf-1299342_1280.png", vida: 1 },
+    { pergunta: "Qual o resultado de 4 + 4 - 2?", respostas: ["8", "6", "7", "5"], correta: "6", inimigo: "Mago dos Cálculos Avançados", inimigoImg: "https://cdn.pixabay.com/photo/2016/04/01/10/50/wizard-1300185_1280.png", vida: 1 },
 ];
 
+// ESTRUTURA DOS BOSSES (Matemática)
 const BOSS_MAT_1 = { 
     inimigo: "DRAGÃO DOS CÁLCULOS (BOSS 1)", 
-    inimigoImg: "./imagens/boss_mat1.png", 
+    inimigoImg: "https://cdn.pixabay.com/photo/2016/04/01/10/48/dragon-1300130_1280.png", 
     vida: 3, 
     perguntasFases: [
         { pergunta: "Fase 1: Quanto é 10 + 10 + 10?", respostas: ["20", "30", "40", "50"], correta: "30" },
@@ -68,7 +68,7 @@ const BOSS_MAT_1 = {
 
 const BOSS_MAT_2 = { 
     inimigo: "TITÃ DA MATEMÁTICA AVANÇADA (BOSS 2)", 
-    inimigoImg: "./imagens/boss_mat2.png", 
+    inimigoImg: "https://cdn.pixabay.com/photo/2013/07/13/10/07/robot-156545_1280.png", 
     vida: 3,
     perguntasFases: [
         { pergunta: "Fase 1: Qual a raiz quadrada de 9?", respostas: ["1", "3", "6", "9"], correta: "3" },
@@ -79,22 +79,23 @@ const BOSS_MAT_2 = {
 
 // ################### PORTUGUÊS ###################
 const PERGUNTAS_PORT_NIVEL_1 = [ 
-    { pergunta: "Qual palavra começa com a letra 'B'?", respostas: ["Casa", "Bola", "Pato", "Rato"], correta: "Bola", inimigo: "Serpente da Palavra", inimigoImg: "./imagens/port_n1_1.png", vida: 1 },
-    { pergunta: "Qual é a vogal de 'P É'?", respostas: ["A", "U", "E", "O"], correta: "E", inimigo: "Ogro das Vogais", inimigoImg: "./imagens/port_n1_2.png", vida: 1 },
-    { pergunta: "O que rima com 'SAPATO'?", respostas: ["MÃO", "DEDO", "PATO", "RUA"], correta: "PATO", inimigo: "Rima Risonha", inimigoImg: "./imagens/port_n1_3.png", vida: 1 },
-    { pergunta: "Quantas letras tem a palavra 'SOL'?", respostas: ["1", "2", "3", "4"], correta: "3", inimigo: "Sombra da Ortografia", inimigoImg: "./imagens/port_n1_4.png", vida: 1 },
+    { pergunta: "Qual palavra começa com a letra 'B'?", respostas: ["Casa", "Bola", "Pato", "Rato"], correta: "Bola", inimigo: "Serpente da Palavra", inimigoImg: "https://cdn.pixabay.com/photo/2016/04/01/11/04/sea-serpent-1300263_1280.png", vida: 1 },
+    { pergunta: "Qual é a vogal de 'P É'?", respostas: ["A", "U", "E", "O"], correta: "E", inimigo: "Ogro das Vogais", inimigoImg: "https://cdn.pixabay.com/photo/2016/04/01/10/18/ogre-1299464_1280.png", vida: 1 },
+    { pergunta: "O que rima com 'SAPATO'?", respostas: ["MÃO", "DEDO", "PATO", "RUA"], correta: "PATO", inimigo: "Rima Risonha", inimigoImg: "https://cdn.pixabay.com/photo/2016/04/01/11/12/imp-1300371_1280.png", vida: 1 },
+    { pergunta: "Quantas letras tem a palavra 'SOL'?", respostas: ["1", "2", "3", "4"], correta: "3", inimigo: "Sombra da Ortografia", inimigoImg: "https://cdn.pixabay.com/photo/2016/04/01/11/17/minotaur-1300465_1280.png", vida: 1 },
 ];
 
 const PERGUNTAS_PORT_NIVEL_2_E_3 = [ 
-    { pergunta: "Qual palavra está escrita de forma correta?", respostas: ["kaza", "caza", "casa", "kassa"], correta: "casa", inimigo: "Copiador Inimigo", inimigoImg: "./imagens/port_n2_1.png", vida: 1 },
-    { pergunta: "Qual palavra tem 3 vogais?", respostas: ["ARARA", "ARCO", "CASA", "PORTA"], correta: "ARARA", inimigo: "Caçador de Vogais", inimigoImg: "./imagens/port_n2_2.png", vida: 1 },
-    { pergunta: "Qual é o plural de 'CARRO'?", respostas: ["CARROS", "CARROES", "CARRA", "CARRO"], correta: "CARROS", inimigo: "Rei do Plural", inimigoImg: "./imagens/port_n2_3.png", vida: 1 },
-    { pergunta: "Qual palavra é um 'adjetivo'?", respostas: ["Correr", "Bonito", "Mesa", "Dois"], correta: "Bonito", inimigo: "Feiticeiro dos Adjetivos", inimigoImg: "./imagens/port_n2_4.png", vida: 1 },
+    { pergunta: "Qual palavra está escrita de forma correta?", respostas: ["kaza", "caza", "casa", "kassa"], correta: "casa", inimigo: "Copiador Inimigo", inimigoImg: "https://cdn.pixabay.com/photo/2016/04/01/10/57/zombie-1300213_1280.png", vida: 1 },
+    { pergunta: "Qual palavra tem 3 vogais?", respostas: ["ARARA", "ARCO", "CASA", "PORTA"], correta: "ARARA", inimigo: "Caçador de Vogais", inimigoImg: "https://cdn.pixabay.com/photo/2016/04/01/11/05/phantom-1300282_1280.png", vida: 1 },
+    { pergunta: "Qual é o plural de 'CARRO'?", respostas: ["CARROS", "CARROES", "CARRA", "CARRO"], correta: "CARROS", inimigo: "Rei do Plural", inimigoImg: "https://cdn.pixabay.com/photo/2016/04/01/11/00/skeleton-1300236_1280.png", vida: 1 },
+    { pergunta: "Qual palavra é um 'adjetivo'?", respostas: ["Correr", "Bonito", "Mesa", "Dois"], correta: "Bonito", inimigo: "Feiticeiro dos Adjetivos", inimigoImg: "https://cdn.pixabay.com/photo/2016/04/01/11/14/witch-1300405_1280.png", vida: 1 },
 ];
 
+// ESTRUTURA DOS BOSSES (Português)
 const BOSS_PORT_1 = { 
     inimigo: "GRANDE FANTASMA DA GRAMÁTICA (BOSS 1)", 
-    inimigoImg: "./imagens/boss_port1.png", 
+    inimigoImg: "https://cdn.pixabay.com/photo/2016/04/01/10/26/ghost-1299616_1280.png", 
     vida: 3, 
     perguntasFases: [
         { pergunta: "Fase 1: Qual palavra tem a letra 'R' no meio?", respostas: ["ARROZ", "RATO", "PATO", "SOL"], correta: "ARROZ" },
@@ -105,7 +106,7 @@ const BOSS_PORT_1 = {
 
 const BOSS_PORT_2 = { 
     inimigo: "ARQUI-DEMÔNIO DA SINTAXE (BOSS 2)", 
-    inimigoImg: "./imagens/boss_port2.png", 
+    inimigoImg: "https://cdn.pixabay.com/photo/2016/04/01/10/18/demon-1299462_1280.png", 
     vida: 3,
     perguntasFases: [
         { pergunta: "Fase 1: Qual é o substantivo próprio desta lista?", respostas: ["cadeira", "cachorro", "brasil", "mesa"], correta: "brasil" },
@@ -116,8 +117,7 @@ const BOSS_PORT_2 = {
 
 
 /**
- * CRIAÇÃO DE ESTÁGIOS APRIMORADA (10 Estágios)
- * Padrão: 4 Perguntas Nível 1 -> BOSS 1 (Estágio 5) -> 4 Perguntas Nível 2/3 -> BOSS 2 (Estágio 10)
+ * CRIAÇÃO DE ESTÁGIOS 
  */
 function criarEstagios(perguntasN1, perguntasN2e3, boss1, boss2) {
     
@@ -142,7 +142,7 @@ function criarEstagios(perguntasN1, perguntasN2e3, boss1, boss2) {
 }
 
 
-// --- Funções de Dicas do Professor (CORRIGIDO) ---
+// --- Funções de Dicas do Professor ---
 
 function mostrarProfessorDica() {
     const imagemProfessor = mundoAtual === 'matematica' ? IMG_PROFESSOR_MAT : IMG_PROFESSOR_PORT;
@@ -168,7 +168,7 @@ function mostrarProfessorDica() {
 }
 
 
-// --- Funções de Leitura de Voz (Text-to-Speech) - NARRADOR MUDADO ---
+// --- Funções de Leitura de Voz (Text-to-Speech) - NARRADOR MASCULINO ---
 
 function falar(texto) {
     if ('speechSynthesis' in window) {
@@ -177,8 +177,6 @@ function falar(texto) {
         utterance.lang = 'pt-BR'; 
         utterance.rate = 0.9; 
         
-        // 💡 MUDANÇA DO NARRADOR: Tentativa de forçar uma voz masculina
-        // A disponibilidade depende do seu navegador/OS.
         const voices = speechSynthesis.getVoices();
         const vozMasculina = voices.find(voice => 
             voice.lang === 'pt-BR' && 
@@ -188,7 +186,6 @@ function falar(texto) {
         if (vozMasculina) {
             utterance.voice = vozMasculina;
         } else {
-            // Fallback: Tenta encontrar qualquer voz pt-BR
             const vozPtBr = voices.find(voice => voice.lang === 'pt-BR');
             if (vozPtBr) {
                 utterance.voice = vozPtBr;
@@ -202,7 +199,6 @@ function falar(texto) {
 }
 
 function lerOpcoesDeResposta(opcoes) {
-    // Usa a mesma lógica de voz do 'falar()'
     let textoCompleto = "As opções são: ";
     opcoes.forEach((opcao, index) => {
         textoCompleto += `Opção ${index + 1}: ${opcao}. `;
@@ -220,7 +216,7 @@ function ocultarTodas() {
     document.getElementById('selecao-mundo').style.display = 'none';
     document.getElementById('tela-batalha').style.display = 'none';
     document.getElementById('tela-mapa').style.display = 'none'; 
-    document.getElementById('area-professor').style.display = 'none'; // Garante que o professor suma
+    document.getElementById('area-professor').style.display = 'none'; 
 }
 
 function mostrarSelecao() {
@@ -268,8 +264,6 @@ function iniciarMundo(mundo) {
     mostrarMapa();
 }
 
-
-// --- Funções do Mapa de Progresso e Batalha (Inalteradas, mas completas) ---
 
 function mostrarMapa() {
     ocultarTodas();
@@ -481,7 +475,6 @@ function verificarResposta(respostaSelecionada) {
 
     atualizarStatus();
 
-    // Sempre chama verificarFimTurno após o timeout (agora 1.5s)
     setTimeout(() => {
         verificarFimTurno(true); 
     }, 1500); 
@@ -523,14 +516,12 @@ function verificarFimTurno(turnoFinalizado) {
         }, 1500); 
 
     } 
-    // 💡 CORREÇÃO APLICADA AQUI: Se o inimigo não foi derrotado e o jogador tem vida, reabilita e reinicia
     else if (inimigoDerrotado === false && vidaJogador > 0) {
         
         document.getElementById('mensagem').className = 'msg-neutra';
         document.getElementById('mensagem').textContent = "Sua vez! Tente a resposta correta para atacar!";
         falar("Tente de novo!");
 
-        // Reabilita todos os botões de resposta
         const opcoesRespostaDiv = document.getElementById('opcoes-resposta');
         if (opcoesRespostaDiv) {
             Array.from(opcoesRespostaDiv.querySelectorAll('button')).forEach(btn => {
@@ -611,7 +602,6 @@ function adicionarPontuacao(eUmBoss) {
 
 // Inicializa o jogo ao carregar a página
 document.addEventListener('DOMContentLoaded', () => {
-    // 💡 Chamada inicial para preencher as vozes antes do primeiro uso
     if ('speechSynthesis' in window) {
         speechSynthesis.onvoiceschanged = () => {
             console.log("Vozes TTS carregadas.");
