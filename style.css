@@ -1,190 +1,240 @@
-/*
-    =======================================================
-    ESTILOS.CSS - Aventura do Conhecimento
-    =======================================================
-*/
-
-/* --- 1. ESTILOS GERAIS --- */
-body {
-    font-family: 'Arial', sans-serif;
+/* RESET BÁSICO */
+* {
     margin: 0;
     padding: 0;
-    background-color: #f4f7f6;
-    color: #333;
+    box-sizing: border-box;
+    font-family: 'Arial', sans-serif;
+}
+
+body {
+    background: linear-gradient(135deg, #2c3e50, #4a69bd); /* Fundo RPG */
+    color: #ecf0f1;
     display: flex;
     justify-content: center;
     align-items: center;
     min-height: 100vh;
+    padding: 20px;
 }
 
-.container {
-    background-color: #fff;
-    padding: 30px;
-    border-radius: 12px;
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
-    width: 90%;
+#game-container {
+    width: 100%;
     max-width: 800px;
-    text-align: center;
+    background-color: #34495e;
+    border: 5px solid #f39c12;
+    border-radius: 15px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
+    padding: 20px;
+    min-height: 600px;
+    position: relative;
 }
 
-h1, h2, h3 {
-    color: #2c3e50;
-}
-
+/* --- ESTILOS GERAIS DE BOTÕES --- */
 button {
-    padding: 12px 25px;
-    margin: 8px;
+    background-color: #f39c12;
+    color: white;
     border: none;
-    border-radius: 8px;
+    padding: 10px 20px;
+    margin: 5px;
+    border-radius: 5px;
     cursor: pointer;
     font-size: 1em;
-    font-weight: bold;
-    transition: background-color 0.3s;
+    transition: background-color 0.2s, transform 0.1s;
 }
 
-button:hover:not(:disabled) {
-    opacity: 0.9;
+button:hover {
+    background-color: #e67e22;
+    transform: translateY(-2px);
 }
 
 button:disabled {
-    background-color: #bdc3c7;
+    background-color: #95a5a6;
     cursor: not-allowed;
 }
 
-/* --- 2. MENU INICIAL E SELEÇÃO DE MUNDO --- */
-#menu-inicial button,
-#selecao-mundo button {
-    background-color: #3498db;
-    color: white;
-    padding: 15px 30px;
-}
 
-#selecao-mundo button.matematica { background-color: #2ecc71; }
-#selecao-mundo button.portugues { background-color: #e67e22; }
+/* --- STATUS GLOBAL E BATALHA --- */
 
-/* --- 3. TELA DE BATALHA --- */
-#tela-batalha {
-    text-align: center;
-}
-
-.area-batalha {
+#barra-status-global {
     display: flex;
-    justify-content: space-around;
-    align-items: flex-start;
-    margin: 20px 0;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    border-bottom: 2px solid #2c3e50;
+    margin-bottom: 20px;
 }
 
-.personagem {
-    width: 45%;
-    padding: 15px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-}
-
-.personagem img {
-    width: 100px;
-    height: 100px;
-    object-fit: cover;
-    border-radius: 50%;
-    margin-bottom: 10px;
-}
-
-/* Barras de Vida */
-.vida-bar-container {
-    background-color: #ecf0f1;
-    border: 1px solid #bdc3c7;
-    border-radius: 5px;
-    margin-top: 5px;
-    height: 25px;
-    overflow: hidden;
-}
-
-.vida-bar {
-    height: 100%;
-    width: 100%; /* Valor inicial */
-    transition: width 0.5s, background-color 0.5s;
+#status-jogador, #status-inimigo {
     display: flex;
     align-items: center;
-    justify-content: center;
-    color: white;
-    font-weight: bold;
+    width: 30%;
+}
+#status-jogador { justify-content: flex-start; }
+#status-inimigo { justify-content: flex-end; }
+#status-info { text-align: center; }
+
+.sprite-status {
+    width: 80px;
+    height: 80px;
+    border: 3px solid white;
+    border-radius: 50%;
+    object-fit: cover;
+}
+#status-jogador .sprite-status { margin-right: 10px; }
+#status-inimigo .sprite-status { margin-left: 10px; }
+
+/* Barras de Vida */
+.vida-barra-container {
+    width: 120px;
     font-size: 0.8em;
-    background-color: #2ecc71; /* Cor padrão */
+    text-align: center;
+}
+.vida-barra-base {
+    background-color: #c0392b;
+    border: 1px solid #7f8c8d;
+    border-radius: 5px;
+    height: 15px;
+    overflow: hidden;
+}
+.vida-barra-preenchimento {
+    height: 100%;
+    transition: width 0.5s ease-in-out, background-color 0.5s;
+}
+#vida-jogador-bar { background-color: #2ecc71; }
+#vida-inimigo-bar { background-color: #e74c3c; }
+
+
+/* --- TELA DE BATALHA --- */
+
+#tela-batalha {
+    text-align: center;
+    padding-top: 20px;
 }
 
-/* Vida do Inimigo */
-.personagem:nth-child(2) .vida-bar {
-    background-color: #e74c3c;
+#nome-inimigo {
+    font-size: 1.5em;
+    color: #e74c3c;
+    margin-bottom: 15px;
 }
 
-
-/* Perguntas e Opções */
 #area-pergunta {
-    margin-top: 20px;
-    padding: 15px;
-    border: 2px dashed #ccc;
+    background-color: #2c3e50;
+    padding: 20px;
     border-radius: 10px;
+    margin-top: 30px;
+    min-height: 250px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
 }
 
 #pergunta-texto {
-    font-size: 1.5em;
-    margin: 20px 0;
-    padding: 15px;
-    background-color: #f7f9fa;
-    border-radius: 8px;
-    border: 1px solid #eee;
+    font-size: 1.4em;
+    margin: 15px 0;
+    color: #f1c40f;
 }
 
 #opcoes-resposta button {
-    background-color: #95a5a6;
-    color: white;
-    margin: 5px;
+    margin: 8px;
+    min-width: 150px;
+    background-color: #1abc9c;
 }
-
-#opcoes-resposta button:nth-child(-n+2) {
-    /* Estilo para os botões de Ouvir */
-    background-color: #34495e;
-    color: white;
+#opcoes-resposta button:hover {
+    background-color: #16a085;
 }
-
 
 /* Mensagens de Feedback */
 #mensagem {
-    font-size: 1.2em;
     padding: 10px;
-    margin-top: 15px;
     border-radius: 5px;
+    font-weight: bold;
+    margin-bottom: 10px;
+    width: 90%;
 }
-.msg-neutra { background-color: #f39c12; color: white; }
-.msg-acerto { background-color: #27ae60; color: white; }
-.msg-erro { background-color: #c0392b; color: white; }
+.msg-acerto { background-color: #2ecc71; color: #34495e; }
+.msg-erro { background-color: #e74c3c; color: white; }
+.msg-neutra { background-color: #f1c40f; color: #34495e; }
 
-/* --- 4. MAPA DE PROGRESSO --- */
+
+/* --- TELA DE MAPA --- */
 #tela-mapa {
-    background-color: #ecf0f1;
-    padding: 25px;
-    border-radius: 12px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     text-align: center;
 }
-
+#mapa-titulo {
+    margin-bottom: 20px;
+    color: #f39c12;
+}
 #mapa-container {
     display: flex;
     justify-content: center;
     align-items: center;
     padding: 20px 0;
-    overflow-x: auto;
+    flex-wrap: wrap; /* Permite quebrar linha em telas menores */
 }
-
 .mapa-node {
-    /* Estilos básicos de nó definidos no JS para dinâmica de cores */
-    min-width: 40px;
+    /* Estilo injetado pelo JS para círculos/nós */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+#botao-mapa-iniciar {
+    margin-top: 20px;
+    background-color: #2ecc71;
+}
+#botao-mapa-iniciar:hover {
+    background-color: #27ae60;
 }
 
-#botao-mapa-iniciar {
-    background-color: #2980b9;
-    color: white;
-    padding: 15px 40px;
-    font-size: 1.2em;
-    margin-top: 20px;
+
+/* --- ✅ ESTILOS PARA A ÁREA DO PROFESSOR (NOVO) --- */
+
+#area-professor {
+    /* Posicionamento Fixo dentro da tela de batalha */
+    position: absolute;
+    bottom: 10px; /* Perto do rodapé */
+    left: 10px; /* Perto da esquerda */
+    z-index: 2000; /* Garante que fique acima de tudo */
+    display: flex;
+    align-items: flex-end; /* Alinha o professor e o balão */
+    max-width: 90%;
+    pointer-events: none; /* Garante que não atrapalhe cliques na tela de batalha */
+}
+
+#professor-img {
+    width: 80px; /* Tamanho da imagem do professor */
+    height: auto;
+    border-radius: 0;
+    border: none;
+    margin-right: -15px; /* Sobrepõe levemente o balão */
+    z-index: 2001; 
+}
+
+#professor-balao {
+    background-color: #f8f8f8; /* Fundo do balão de fala */
+    color: #34495e;
+    border: 2px solid #555;
+    border-radius: 15px;
+    padding: 10px 15px;
+    position: relative;
+    max-width: 250px;
+    text-align: left;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+}
+
+/* Cria a ponta do balão de fala (seta) */
+#professor-balao::before {
+    content: '';
+    position: absolute;
+    bottom: 5px;
+    left: -10px; 
+    border-top: 10px solid transparent;
+    border-bottom: 10px solid transparent;
+    border-right: 10px solid #555; /* Cor da borda */
+}
+#professor-balao::after {
+    content: '';
+    position: absolute;
+    bottom: 5px;
+    left: -8px; 
+    border-top: 10px solid transparent;
+    border-bottom: 10px solid transparent;
+    border-right: 10px solid #f8f8f8; /* Cor do fundo */
 }
