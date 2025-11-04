@@ -1,6 +1,6 @@
 // =================================================================
 //                 CÓDIGO JAVASCRIPT COMPLETO (FINAL)
-//        (Com URLs da Web para TODOS os Inimigos e Bosses)
+//   (Todos os inimigos da mesma matéria usam a mesma imagem)
 // =================================================================
 
 // --- Variáveis Globais de Jogo ---
@@ -16,108 +16,127 @@ const PONTOS_POR_BOSS = 300;
 let estagioAtualIndex = 0; 
 let estagiosDoMundoAtual = []; 
 
+// --- VARIÁVEIS GLOBAIS DE OPÇÕES DE JOGO ---
+let vozSelecionada = 'feminina'; 
+let narracaoPerguntaAtiva = true; 
+let narracaoAlternativasAtiva = false; 
 
-// --- IMAGENS PRÉ-DEFINIDAS (HERÓIS E PROFESSORES - USANDO URLs DA WEB) ---
+// --- IMAGENS PRÉ-DEFINIDAS (USANDO URLs DA WEB FUNCIONAIS E ESTÁVEIS) ---
 
 // Imagens do Herói (Player)
 const IMAGENS_HEROI = {
-    matematica: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c7/Knight_illustration.svg/150px-Knight_illustration.svg.png", // Cavaleiro
-    portugues: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d4/Female_mage_illustration.svg/150px-Female_mage_illustration.svg.png" // Maga
+    matematica: "./img/gato.png", 
+    portugues: "./img/gato.png" 
 };
+// Imagens de Inimigos GENÉRICAS (NOVAS IMAGENS)
+const IMG_MONSTRO_MAT = "./img/inimigo-mat.png"; // Um ícone de número (Matemática)
+const IMG_MONSTRO_PORT = "./img/inimigo-portugues.png"; // Um ícone de livro (Português)
+
 // Imagens de Fim de Jogo
 const IMG_GAME_OVER = "https://cdn.pixabay.com/photo/2014/12/10/11/17/game-over-562947_1280.png";
 const IMG_VITORIA = "https://cdn.pixabay.com/photo/2016/09/08/11/49/trophy-1654160_1280.png";
 // Professor e Dicas
-const IMG_PROFESSOR_MAT = "https://cdn.pixabay.com/photo/2016/04/01/10/58/teacher-1300067_1280.png"; // Professor de Óculos
-const IMG_PROFESSOR_PORT = "https://cdn.pixabay.com/photo/2021/01/30/17/43/old-woman-5965410_1280.png"; // Professora Sábia
+const IMG_PROFESSOR_MAT = "./img/macaco.png"; 
+const IMG_PROFESSOR_PORT = "./img/coruja.png"; 
 
+// DICAS ANIMADAS E SIMPLES
 const DICAS_PROFESSORES = {
-    matematica: "Lembre-se da ordem das operações: primeiro multiplicação/divisão, depois adição/subtração. Tente contar nos dedos!",
-    portugues: "Preste atenção nas letras iniciais e finais! Tente falar a palavra em voz alta para identificar as sílabas."
+    matematica: "Professor diz: Uhu! Se liga nas continhas, meu pequeno herói! Para somar e subtrair, use seus dedos, ou desenhe bolinhas! Você consegue!",
+    portugues: "Professor diz: Preste atenção! Fale a palavrinha bem alto! Veja o som de cada letra. Qual letrinha está no começo? Tente de novo!"
 };
 
 
-// --- CONTEÚDO: PERGUNTAS E INIMIGOS (COM URLs da Web) ---
+// --- CONTEÚDO: PERGUNTAS E INIMIGOS (NÍVEL 1: 5-6 ANOS) ---
 
 // ################### MATEMÁTICA ###################
 const PERGUNTAS_MAT_NIVEL_1 = [ 
-    { pergunta: "Quanto é 3 + 1?", respostas: ["1", "3", "2", "4"], correta: "4", inimigo: "Monstro da Adição Simples", inimigoImg: "https://cdn.pixabay.com/photo/2016/04/01/10/18/ogre-1299464_1280.png", vida: 1 },
-    { pergunta: "Qual vem depois do número 9?", respostas: ["8", "10", "11", "90"], correta: "10", inimigo: "Contador Rápido", inimigoImg: "https://cdn.pixabay.com/photo/2016/04/01/11/04/fairy-1300267_1280.png", vida: 1 },
-    { pergunta: "Qual forma tem 3 pontas (lados)?", respostas: ["Círculo", "Quadrado", "Triângulo", "Estrela"], correta: "Triângulo", inimigo: "Geometra Maluco", inimigoImg: "https://cdn.pixabay.com/photo/2016/04/01/10/01/dragon-1299292_1280.png", vida: 1 },
-    { pergunta: "Se tenho 2 bonecas e ganho mais 2, com quantas eu fico?", respostas: ["3", "5", "4", "2"], correta: "4", inimigo: "Fada da Adição", inimigoImg: "https://cdn.pixabay.com/photo/2016/04/01/11/12/goblin-1300373_1280.png", vida: 1 },
+    // Conteúdo 5-6 anos
+    // REMOVIDO: inimigoImg
+    { pergunta: "Quantas rodinhas o carro tem? (Conte nos dedos!)", respostas: ["2", "3", "4", "5"], correta: "4", inimigo: "Monstro da Contagem Simples", vida: 1 },
+    { pergunta: "Quanto é 2 + 1? (Dois mais um!)", respostas: ["1", "2", "3", "4"], correta: "3", inimigo: "Somador Amigo", vida: 1 },
+    { pergunta: "Qual forma parece um telhado de casinha?", respostas: ["Círculo", "Quadrado", "Triângulo", "Estrela"], correta: "Triângulo", inimigo: "Geometra Maluco", vida: 1 },
+    { pergunta: "Qual número vem ANTES do número 5?", respostas: ["3", "4", "6", "7"], correta: "4", inimigo: "Antecessor Rápido", vida: 1 },
 ];
 
+// --- CONTEÚDO: PERGUNTAS E INIMIGOS (NÍVEL 2/3: 7-8 ANOS) ---
 const PERGUNTAS_MAT_NIVEL_2_E_3 = [ 
-    { pergunta: "Quanto é 2 x 3?", respostas: ["4", "5", "6", "7"], correta: "6", inimigo: "Multiplicador Fantasma", inimigoImg: "https://cdn.pixabay.com/photo/2016/04/01/10/26/ghost-1299616_1280.png", vida: 1 },
-    { pergunta: "Qual é o resultado de 10 / 2?", respostas: ["3", "4", "5", "6"], correta: "5", inimigo: "Divisor Místico", inimigoImg: "https://cdn.pixabay.com/photo/2016/04/01/10/19/alien-1299484_1280.png", vida: 1 },
-    { pergunta: "O que é um número par?", respostas: ["Ímpar", "Um número que divide por 2", "Um número que não divide por 2", "Zero"], correta: "Um número que divide por 2", inimigo: "Duende da Paridade", inimigoImg: "https://cdn.pixabay.com/photo/2016/04/01/10/06/elf-1299342_1280.png", vida: 1 },
-    { pergunta: "Qual o resultado de 4 + 4 - 2?", respostas: ["8", "6", "7", "5"], correta: "6", inimigo: "Mago dos Cálculos Avançados", inimigoImg: "https://cdn.pixabay.com/photo/2016/04/01/10/50/wizard-1300185_1280.png", vida: 1 },
+    // Conteúdo 7-8 anos
+    // REMOVIDO: inimigoImg
+    { pergunta: "Quanto é 7 + 4? (Sete mais quatro!)", respostas: ["10", "11", "12", "13"], correta: "11", inimigo: "Somador Maior", vida: 1 },
+    { pergunta: "Quanto é 15 menos 5? (Quinze tira cinco!)", respostas: ["8", "9", "10", "11"], correta: "10", inimigo: "Subtrador Experiente", vida: 1 },
+    { pergunta: "Se o seu time fez 5 pontos e o outro fez 7, quem está ganhando?", respostas: ["Seu Time", "O Outro Time", "Estão Empatados", "Ninguém"], correta: "O Outro Time", inimigo: "Duende da Comparação", vida: 1 },
+    { pergunta: "Quanto é 2 vezes 3? (É o mesmo que 3 + 3!)", respostas: ["4", "5", "6", "7"], correta: "6", inimigo: "Multiplicador Aprendiz", vida: 1 },
 ];
 
-// ESTRUTURA DOS BOSSES (Matemática)
+// ESTRUTURA DOS BOSSES (Matemática) - 7-8 ANOS
 const BOSS_MAT_1 = { 
     inimigo: "DRAGÃO DOS CÁLCULOS (BOSS 1)", 
-    inimigoImg: "https://cdn.pixabay.com/photo/2016/04/01/10/48/dragon-1300130_1280.png", 
+    // REMOVIDO: inimigoImg
     vida: 3, 
     perguntasFases: [
-        { pergunta: "Fase 1: Quanto é 10 + 10 + 10?", respostas: ["20", "30", "40", "50"], correta: "30" },
-        { pergunta: "Fase 2: Calcule: 5 x 2 + 3", respostas: ["13", "15", "11", "10"], correta: "13" },
-        { pergunta: "Fase 3: Se 1/4 é 5, quanto é o total?", respostas: ["10", "20", "15", "25"], correta: "20" }
+        { pergunta: "Fase 1: Quanto é 12 + 6?", respostas: ["16", "17", "18", "19"], correta: "18" },
+        { pergunta: "Fase 2: Calcule: 10 - 3 + 1", respostas: ["8", "7", "6", "9"], correta: "8" },
+        { pergunta: "Fase 3: Se o lápis custa R$ 2,00, quanto custam 3 lápis?", respostas: ["R$ 4,00", "R$ 6,00", "R$ 5,00", "R$ 8,00"], correta: "R$ 6,00" }
     ]
 };
 
 const BOSS_MAT_2 = { 
     inimigo: "TITÃ DA MATEMÁTICA AVANÇADA (BOSS 2)", 
-    inimigoImg: "https://cdn.pixabay.com/photo/2013/07/13/10/07/robot-156545_1280.png", 
+    // REMOVIDO: inimigoImg
     vida: 3,
     perguntasFases: [
-        { pergunta: "Fase 1: Qual a raiz quadrada de 9?", respostas: ["1", "3", "6", "9"], correta: "3" },
-        { pergunta: "Fase 2: Se x = 5, quanto é 2x + 1?", respostas: ["10", "11", "12", "6"], correta: "11" },
-        { pergunta: "Fase 3: 0.5 em porcentagem é...?", respostas: ["5%", "50%", "0.5%", "15%"], correta: "50%" }
+        { pergunta: "Fase 1: Qual o resultado de 4 x 4?", respostas: ["8", "12", "16", "20"], correta: "16" },
+        { pergunta: "Fase 2: Se 20 / 4 é 5, quanto é 4 x 5?", respostas: ["16", "20", "24", "10"], correta: "20" },
+        { pergunta: "Fase 3: Qual é o número 'trinta e cinco'?", respostas: ["305", "35", "53", "503"], correta: "35" }
     ]
 };
 
 // ################### PORTUGUÊS ###################
 const PERGUNTAS_PORT_NIVEL_1 = [ 
-    { pergunta: "Qual palavra começa com a letra 'B'?", respostas: ["Casa", "Bola", "Pato", "Rato"], correta: "Bola", inimigo: "Serpente da Palavra", inimigoImg: "https://cdn.pixabay.com/photo/2016/04/01/11/04/sea-serpent-1300263_1280.png", vida: 1 },
-    { pergunta: "Qual é a vogal de 'P É'?", respostas: ["A", "U", "E", "O"], correta: "E", inimigo: "Ogro das Vogais", inimigoImg: "https://cdn.pixabay.com/photo/2016/04/01/10/18/ogre-1299464_1280.png", vida: 1 },
-    { pergunta: "O que rima com 'SAPATO'?", respostas: ["MÃO", "DEDO", "PATO", "RUA"], correta: "PATO", inimigo: "Rima Risonha", inimigoImg: "https://cdn.pixabay.com/photo/2016/04/01/11/12/imp-1300371_1280.png", vida: 1 },
-    { pergunta: "Quantas letras tem a palavra 'SOL'?", respostas: ["1", "2", "3", "4"], correta: "3", inimigo: "Sombra da Ortografia", inimigoImg: "https://cdn.pixabay.com/photo/2016/04/01/11/17/minotaur-1300465_1280.png", vida: 1 },
+    // Conteúdo 5-6 anos
+    // REMOVIDO: inimigoImg
+    { pergunta: "Qual é a primeira letra da palavra 'BOLA'?", respostas: ["P", "C", "B", "M"], correta: "B", inimigo: "Serpente da Letra", vida: 1 },
+    { pergunta: "Qual vogal (A, E, I, O, U) começa a palavra 'URSO'?", respostas: ["A", "U", "E", "O"], correta: "U", inimigo: "Ogro das Vogais", vida: 1 },
+    { pergunta: "Qual palavra RIMA com 'FOGÃO'?", respostas: ["PÃO", "DEDO", "PATO", "RUA"], correta: "PÃO", inimigo: "Rima Risonha", vida: 1 },
+    { pergunta: "Qual palavra tem a letra 'V' no começo?", respostas: ["CASA", "MALA", "VACA", "BOLA"], correta: "VACA", inimigo: "Caçador de Letras", vida: 1 },
 ];
 
+// --- CONTEÚDO: PERGUNTAS E INIMIGOS (NÍVEL 2/3: 7-8 ANOS) ---
 const PERGUNTAS_PORT_NIVEL_2_E_3 = [ 
-    { pergunta: "Qual palavra está escrita de forma correta?", respostas: ["kaza", "caza", "casa", "kassa"], correta: "casa", inimigo: "Copiador Inimigo", inimigoImg: "https://cdn.pixabay.com/photo/2016/04/01/10/57/zombie-1300213_1280.png", vida: 1 },
-    { pergunta: "Qual palavra tem 3 vogais?", respostas: ["ARARA", "ARCO", "CASA", "PORTA"], correta: "ARARA", inimigo: "Caçador de Vogais", inimigoImg: "https://cdn.pixabay.com/photo/2016/04/01/11/05/phantom-1300282_1280.png", vida: 1 },
-    { pergunta: "Qual é o plural de 'CARRO'?", respostas: ["CARROS", "CARROES", "CARRA", "CARRO"], correta: "CARROS", inimigo: "Rei do Plural", inimigoImg: "https://cdn.pixabay.com/photo/2016/04/01/11/00/skeleton-1300236_1280.png", vida: 1 },
-    { pergunta: "Qual palavra é um 'adjetivo'?", respostas: ["Correr", "Bonito", "Mesa", "Dois"], correta: "Bonito", inimigo: "Feiticeiro dos Adjetivos", inimigoImg: "https://cdn.pixabay.com/photo/2016/04/01/11/14/witch-1300405_1280.png", vida: 1 },
+    // Conteúdo 7-8 anos
+    // REMOVIDO: inimigoImg
+    { pergunta: "Quantas sílabas tem a palavra 'SAPATO'?", respostas: ["2", "3", "4", "5"], correta: "3", inimigo: "Mestre das Sílabas", vida: 1 },
+    { pergunta: "O que usamos para terminar uma frase?", respostas: ["Vírgula", "Ponto Final", "Dois Pontos", "Interrogação"], correta: "Ponto Final", inimigo: "Pontuador Maluco", vida: 1 },
+    { pergunta: "Qual é o plural (mais de um) de 'CÃO'?", respostas: ["Cãoes", "Cães", "Cano", "Cãs"], correta: "Cães", inimigo: "Rei do Plural", vida: 1 },
+    { pergunta: "Qual palavra é um 'nome' (substantivo)?", respostas: ["Correr", "Lindo", "ESCOLA", "Dez"], correta: "ESCOLA", inimigo: "Feiticeiro dos Nomes", vida: 1 },
 ];
 
-// ESTRUTURA DOS BOSSES (Português)
+// ESTRUTURA DOS BOSSES (Português) - 7-8 ANOS
 const BOSS_PORT_1 = { 
     inimigo: "GRANDE FANTASMA DA GRAMÁTICA (BOSS 1)", 
-    inimigoImg: "https://cdn.pixabay.com/photo/2016/04/01/10/26/ghost-1299616_1280.png", 
+    // REMOVIDO: inimigoImg
     vida: 3, 
     perguntasFases: [
-        { pergunta: "Fase 1: Qual palavra tem a letra 'R' no meio?", respostas: ["ARROZ", "RATO", "PATO", "SOL"], correta: "ARROZ" },
-        { pergunta: "Fase 2: O que é um 'adjetivo' em: 'O céu está azul'?", respostas: ["céu", "está", "azul", "o"], correta: "azul" },
-        { pergunta: "Fase 3: Qual é o aumentativo de 'CASA'?", respostas: ["Casinha", "Casarão", "Casebre", "Casota"], correta: "Casarão" }
+        { pergunta: "Fase 1: O que é 'adjetivo' em: 'A flor é CHEIROSA'?", respostas: ["A", "flor", "cheirosa", "é"], correta: "cheirosa" },
+        { pergunta: "Fase 2: Quantas sílabas tem a palavra 'BORBOLETA'?", respostas: ["3", "4", "5", "6"], correta: "4" },
+        { pergunta: "Fase 3: Qual é o nome correto do sinal '?'?", respostas: ["Ponto Final", "Vírgula", "Exclamação", "Interrogação"], correta: "Interrogação" }
     ]
 };
 
 const BOSS_PORT_2 = { 
     inimigo: "ARQUI-DEMÔNIO DA SINTAXE (BOSS 2)", 
-    inimigoImg: "https://cdn.pixabay.com/photo/2016/04/01/10/18/demon-1299462_1280.png", 
+    // REMOVIDO: inimigoImg
     vida: 3,
     perguntasFases: [
-        { pergunta: "Fase 1: Qual é o substantivo próprio desta lista?", respostas: ["cadeira", "cachorro", "brasil", "mesa"], correta: "brasil" },
-        { pergunta: "Fase 2: A palavra 'FELICIDADE' é um substantivo...?", respostas: ["Concreto", "Comum", "Abstrato", "Próprio"], correta: "Abstrato" },
-        { pergunta: "Fase 3: Qual é a função da vírgula na frase 'João, venha cá'?", respostas: ["Separar ideias", "Vocativo", "Adjunto", "Conectivo"], correta: "Vocativo" }
+        { pergunta: "Fase 1: O que é o 'verbo' (ação) nesta frase: 'O gato COMEU a ração'?", respostas: ["gato", "comeu", "ração", "o"], correta: "comeu" },
+        { pergunta: "Fase 2: Qual é o diminutivo (pequeno) de 'LIVRO'?", respostas: ["Livrinho", "Livrão", "Livrito", "Livrete"], correta: "Livrinho" },
+        { pergunta: "Fase 3: O que usamos para separar itens em uma lista?", respostas: ["Ponto final", "Vírgula", "Interrogação", "Travessão"], correta: "Vírgula" }
     ]
 };
 
 
 /**
- * CRIAÇÃO DE ESTÁGIOS 
+ * CRIAÇÃO DE ESTÁGIOS
  */
 function criarEstagios(perguntasN1, perguntasN2e3, boss1, boss2) {
     
@@ -159,7 +178,7 @@ function mostrarProfessorDica() {
     
     areaProfessor.style.display = 'flex'; 
     
-    falar(`O professor diz: ${dicaTexto}`);
+    falar(`${dicaTexto}`);
 
     setTimeout(() => {
         areaProfessor.style.display = 'none';
@@ -168,9 +187,14 @@ function mostrarProfessorDica() {
 }
 
 
-// --- Funções de Leitura de Voz (Text-to-Speech) - NARRADOR MASCULINO ---
+// --- Funções de Leitura de Voz (Text-to-Speech) ---
 
-function falar(texto) {
+/**
+ * Fala o texto e executa um callback (função) ao terminar.
+ * @param {string} texto O texto a ser lido.
+ * @param {function} [callback] A função a ser executada ao final da leitura.
+ */
+function falar(texto, callback) {
     if ('speechSynthesis' in window) {
         speechSynthesis.cancel(); 
         const utterance = new SpeechSynthesisUtterance(texto);
@@ -178,23 +202,43 @@ function falar(texto) {
         utterance.rate = 0.9; 
         
         const voices = speechSynthesis.getVoices();
-        const vozMasculina = voices.find(voice => 
-            voice.lang === 'pt-BR' && 
-            (voice.name.toLowerCase().includes('male') || voice.name.toLowerCase().includes('bruno'))
-        );
         
-        if (vozMasculina) {
-            utterance.voice = vozMasculina;
-        } else {
-            const vozPtBr = voices.find(voice => voice.lang === 'pt-BR');
-            if (vozPtBr) {
-                utterance.voice = vozPtBr;
-            }
+        let targetVoice;
+
+        if (vozSelecionada === 'feminina') {
+             targetVoice = voices.find(voice => 
+                voice.lang === 'pt-BR' && 
+                (voice.name.toLowerCase().includes('female') || voice.name.toLowerCase().includes('alice'))
+            );
+        } else { // 'masculina'
+            targetVoice = voices.find(voice => 
+                voice.lang === 'pt-BR' && 
+                (voice.name.toLowerCase().includes('male') || voice.name.toLowerCase().includes('bruno'))
+            );
+        }
+        
+        const vozPtBr = voices.find(voice => voice.lang === 'pt-BR');
+        
+        if (targetVoice) {
+            utterance.voice = targetVoice;
+        } else if (vozPtBr) {
+            utterance.voice = vozPtBr;
+        }
+        
+        // Executa o callback quando a narração terminar
+        if (callback && typeof callback === 'function') {
+            utterance.onend = () => {
+                // Pequena verificação para evitar bugs de cancelamento em alguns navegadores (Chrome)
+                if (speechSynthesis.speaking === false || utterance.text === texto) {
+                     callback();
+                }
+            };
         }
         
         speechSynthesis.speak(utterance);
     } else {
         console.warn("API de Síntese de Fala não suportada neste navegador.");
+        if (callback) callback(); // Garante que o jogo prossiga mesmo sem narração
     }
 }
 
@@ -206,7 +250,7 @@ function lerOpcoesDeResposta(opcoes) {
     falar(textoCompleto);
 }
 
-// --- Funções de Navegação e Reset ---
+// --- Funções de Navegação e Batalha ---
 
 function ocultarTodas() {
     speechSynthesis.cancel();
@@ -216,7 +260,65 @@ function ocultarTodas() {
     document.getElementById('selecao-mundo').style.display = 'none';
     document.getElementById('tela-batalha').style.display = 'none';
     document.getElementById('tela-mapa').style.display = 'none'; 
-    document.getElementById('area-professor').style.display = 'none'; 
+    document.getElementById('area-professor').style.display = 'none';
+    
+    const telaOpcoes = document.getElementById('tela-opcoes');
+    if (telaOpcoes) telaOpcoes.style.display = 'none';
+}
+
+function mostrarOpcoes() {
+    ocultarTodas();
+    const telaOpcoes = document.getElementById('tela-opcoes');
+    
+    if (!telaOpcoes.innerHTML.trim()) {
+        renderizarMenuOpcoes();
+    }
+    
+    document.getElementById('toggle-voz-btn').textContent = `Voz: ${vozSelecionada === 'feminina' ? 'Feminina 👧' : 'Masculina 🧑'}`;
+    document.getElementById('toggle-pergunta-btn').textContent = `Narração Pergunta: ${narracaoPerguntaAtiva ? 'LIGADA ✅' : 'DESLIGADA ❌'}`;
+    document.getElementById('toggle-alternativas-btn').textContent = `Narração Alternativas: ${narracaoAlternativasAtiva ? 'LIGADA ✅' : 'DESLIGADA ❌'}`;
+
+
+    telaOpcoes.style.display = 'block';
+}
+
+function renderizarMenuOpcoes() {
+    const telaOpcoes = document.getElementById('tela-opcoes');
+    
+    if (!telaOpcoes) return; 
+    
+    telaOpcoes.innerHTML = `
+        <h2>⚙️ Opções de Narração ⚙️</h2>
+        <div class="opcoes-container">
+            <button id="toggle-voz-btn" onclick="toggleVoz()">Voz: Feminina 👧</button>
+            <button id="toggle-pergunta-btn" onclick="toggleNarracaoPergunta()">Narração Pergunta: LIGADA ✅</button>
+            <button id="toggle-alternativas-btn" onclick="toggleNarracaoAlternativas()">Narração Alternativas: DESLIGADA ❌</button>
+        </div>
+        <button onclick="voltarParaMenuPrincipal()">Voltar ao Menu Principal</button>
+    `;
+}
+
+function toggleVoz() {
+    vozSelecionada = vozSelecionada === 'feminina' ? 'masculina' : 'feminina';
+    document.getElementById('toggle-voz-btn').textContent = `Voz: ${vozSelecionada === 'feminina' ? 'Feminina 👧' : 'Masculina 🧑'}`;
+    falar(`Voz ${vozSelecionada} selecionada!`);
+}
+
+function toggleNarracaoPergunta() {
+    narracaoPerguntaAtiva = !narracaoPerguntaAtiva;
+    document.getElementById('toggle-pergunta-btn').textContent = `Narração Pergunta: ${narracaoPerguntaAtiva ? 'LIGADA ✅' : 'DESLIGADA ❌'}`;
+    falar(`Narração da pergunta agora está ${narracaoPerguntaAtiva ? 'ligada' : 'desligada'}.`);
+}
+
+function toggleNarracaoAlternativas() {
+    narracaoAlternativasAtiva = !narracaoAlternativasAtiva;
+    document.getElementById('toggle-alternativas-btn').textContent = `Narração Alternativas: ${narracaoAlternativasAtiva ? 'LIGADA ✅' : 'DESLIGADA ❌'}`;
+    falar(`Narração das alternativas agora está ${narracaoAlternativasAtiva ? 'ligada' : 'desligada'}.`);
+}
+
+function voltarParaMenuPrincipal() {
+    ocultarTodas();
+    document.getElementById('menu-inicial').style.display = 'block';
 }
 
 function mostrarSelecao() {
@@ -235,7 +337,7 @@ function mostrarSelecao() {
     document.getElementById('tempo-display').textContent = '--';
     
     const areaPergunta = document.getElementById('area-pergunta');
-    areaPergunta.innerHTML = '<div id="mensagem" class="msg-neutra">Selecione uma resposta para começar a batalha!</div><p id="pergunta-texto">Qual é a pergunta?</p><div id="opcoes-resposta"></div>';
+    areaPergunta.innerHTML = '<div id="mensagem" class="msg-neutra">Selecione uma resposta para começar a aventura!</div><p id="pergunta-texto">Qual é a pergunta?</p><div id="opcoes-resposta"></div>';
 
     document.getElementById('selecao-mundo').style.display = 'block';
 }
@@ -342,33 +444,55 @@ function iniciarEstagioAtual() {
 
 function proximaPergunta() {
     const estagio = estagiosDoMundoAtual[estagioAtualIndex];
+    // DETERMINA A IMAGEM DO INIMIGO AQUI
+    const imagemDoInimigo = mundoAtual === 'matematica' ? IMG_MONSTRO_MAT : IMG_MONSTRO_PORT; 
+
 
     if (!estagio) {
         document.getElementById('inimigo-img').src = IMG_VITORIA;
         document.getElementById('jogador-img').src = IMAGENS_HEROI[mundoAtual];
         document.getElementById('mensagem').className = 'msg-acerto';
-        document.getElementById('mensagem').textContent = `🏆 VITÓRIA! Você VENCEU O MUNDO! Pontuação Final: ${pontuacao} pontos!`;
+        document.getElementById('mensagem').textContent = `🏆 VITÓRIA! Você VENCEU O MUNDO! Pontuação Final: ${pontuacao} pontos! Você é um MESTRE!`;
         document.getElementById('area-pergunta').innerHTML = `<button onclick="mostrarSelecao()">Jogar Novamente</button>`;
-        falar(`Parabéns! Você é um mestre da ${mundoAtual}.`);
+        falar(`UAU! Parabéns! Você é o Mestre da ${mundoAtual}! Que herói incrível!`);
         return;
     }
     
     let dadosDaPergunta;
     let vidaInimigoAtual, vidaInimigoMax;
+    const estagioEhBoss = estagio.tipo === 'boss';
+
     
-    if (estagio.tipo === 'boss') {
-        const faseIndex = estagio.data.vida - estagio.vidaAtual;
+    if (estagioEhBoss) {
+        // A fase atual do boss é determinada por quantas vidas faltam
+        const faseIndex = estagio.data.vida - estagio.vidaAtual; 
+        
+        // Verifica se ainda há fases (perguntas) restantes
+        if (faseIndex >= estagio.data.perguntasFases.length || estagio.vidaAtual <= 0) {
+            // Este caso deve ser tratado por verificarFimTurno, mas é uma salvaguarda
+            estagio.concluido = true;
+            estagioAtualIndex++;
+            proximaPergunta();
+            return;
+        }
+
+        // Pega a pergunta correta para a fase
         dadosDaPergunta = estagio.data.perguntasFases[faseIndex];
         
+        // Adiciona informações do Boss à pergunta atual
         dadosDaPergunta.inimigo = estagio.data.inimigo;
-        dadosDaPergunta.inimigoImg = estagio.data.inimigoImg;
+        // ATRIBUI A IMAGEM GENÉRICA DO MUNDO PARA O BOSS
+        dadosDaPergunta.inimigoImg = imagemDoInimigo;
         dadosDaPergunta.vidaBoss = estagio.vidaAtual;
         dadosDaPergunta.vidaBossMax = estagio.vidaMax;
         
         vidaInimigoAtual = estagio.vidaAtual;
         vidaInimigoMax = estagio.vidaMax;
     } else {
+        // Inimigo normal (com uma única vida/pergunta)
         dadosDaPergunta = estagio.data;
+        // ATRIBUI A IMAGEM GENÉRICA DO MUNDO PARA O INIMIGO NORMAL
+        dadosDaPergunta.inimigoImg = imagemDoInimigo;
         dadosDaPergunta.vidaBoss = estagio.data.vida; 
         dadosDaPergunta.vidaBossMax = estagio.data.vida; 
         
@@ -385,7 +509,8 @@ function proximaPergunta() {
     const opcoesDiv = document.getElementById('opcoes-resposta');
 
     document.getElementById('nome-inimigo').textContent = perguntaAtual.inimigo;
-    document.getElementById('inimigo-img').src = perguntaAtual.inimigoImg || IMAGENS_HEROI[mundoAtual];
+    // Usa a imagem atribuída acima
+    document.getElementById('inimigo-img').src = perguntaAtual.inimigoImg;
 
     document.getElementById('vida-inimigo-texto').textContent = vidaInimigoAtual + ' / ' + vidaInimigoMax;
     const barraInimigo = document.getElementById('vida-inimigo-bar');
@@ -394,17 +519,25 @@ function proximaPergunta() {
     
     atualizarStatus();
     document.getElementById('mensagem').className = 'msg-neutra';
-    document.getElementById('mensagem').textContent = `Enfrentando: ${perguntaAtual.inimigo}. Clique para ouvir a pergunta!`;
+    document.getElementById('mensagem').textContent = `Enfrentando: ${perguntaAtual.inimigo}! Vamos lá, pequeno herói!`;
     
-    perguntaTexto.textContent = perguntaAtual.pergunta;
+    // Se for Boss, mostra a fase:
+    if (estagioEhBoss) {
+        const fase = estagio.data.perguntasFases.length - (estagio.vidaAtual - 1);
+        perguntaTexto.textContent = `Fase ${fase}: ${perguntaAtual.pergunta}`;
+    } else {
+        perguntaTexto.textContent = perguntaAtual.pergunta;
+    }
+    
     opcoesDiv.innerHTML = '';
     
     const respostasEmbaralhadas = [...perguntaAtual.respostas].sort(() => Math.random() - 0.5);
     
+    // Cria botões de narração
     const btnOuvirPergunta = document.createElement('button');
     btnOuvirPergunta.textContent = '🔊 Ouvir Pergunta';
     btnOuvirPergunta.style.marginBottom = '15px';
-    btnOuvirPergunta.onclick = () => falar(perguntaAtual.pergunta);
+    btnOuvirPergunta.onclick = () => falar(perguntaAtual.pergunta, narracaoAlternativasAtiva ? () => lerOpcoesDeResposta(respostasEmbaralhadas) : null);
     opcoesDiv.appendChild(btnOuvirPergunta);
     
     const btnOuvirOpcoes = document.createElement('button');
@@ -416,7 +549,26 @@ function proximaPergunta() {
     
     opcoesDiv.appendChild(document.createElement('br')); 
 
-    falar(perguntaAtual.pergunta);
+    // Narração automática da pergunta com o callback das opções
+    if (narracaoPerguntaAtiva) {
+        let textoPerguntaCompleto = perguntaAtual.pergunta;
+        if (estagioEhBoss) {
+            const fase = estagio.data.perguntasFases.length - (estagio.vidaAtual - 1);
+            textoPerguntaCompleto = `Fase ${fase}. ${perguntaAtual.inimigo} te espera! Escute o desafio: ${perguntaAtual.pergunta}`;
+        }
+        
+        if (narracaoAlternativasAtiva) {
+             // Passamos a narração das opções como um callback da narração da pergunta
+            falar(textoPerguntaCompleto, () => lerOpcoesDeResposta(respostasEmbaralhadas));
+        } else {
+            // Se só a pergunta estiver ativa, não há callback
+            falar(textoPerguntaCompleto);
+        }
+        
+    } else {
+        falar(`Prepare-se para o desafio!`);
+    }
+
     
     respostasEmbaralhadas.forEach(resposta => {
         const btn = document.createElement('button');
@@ -443,29 +595,30 @@ function verificarResposta(respostaSelecionada) {
 
     if (acertou) {
         if (estagio.tipo === 'boss') {
-            estagio.vidaAtual--;
+            estagio.vidaAtual--; // Só decrementa se for Boss
             adicionarPontuacao(true);
-            mensagemElemento.textContent = `🎉 Acertou! Dano no ${perguntaAtual.inimigo}! O Boss perdeu uma vida!`;
+            mensagemElemento.textContent = `🎉 ACERTOU! Super Dano no ${perguntaAtual.inimigo}! O Boss perdeu uma vida! Mantenha o foco!`;
+            falar("UAU! Que golpe poderoso! O Boss sentiu!");
         } else {
             estagio.data.vida--; 
             adicionarPontuacao(false);
-            mensagemElemento.textContent = `🎉 Acertou! ${perguntaAtual.inimigo} derrotado!`;
+            mensagemElemento.textContent = `🎉 UAU! Você ACERTOU! ${perguntaAtual.inimigo} derrotado! Avance!`;
+            falar("PARABÉNS! Que inteligência! Você acertou!");
         }
         
         mensagemElemento.className = 'msg-acerto';
-        falar("Você acertou! Muito bem!");
         
     } else {
         vidaJogador--;
         
         if (timeout) {
             mensagemElemento.className = 'msg-erro';
-            mensagemElemento.textContent = `⏰ Tempo Esgotado! O ${perguntaAtual.inimigo} te atacou!`;
-            falar("Tempo esgotado! Você perdeu vida.");
+            mensagemElemento.textContent = `⏰ ACABOU O TEMPO! O ${perguntaAtual.inimigo} te atacou! Mas não desista!`;
+            falar("Aah, o tempo acabou! Você perdeu um coração, mas vamos tentar de novo!");
         } else {
             mensagemElemento.className = 'msg-erro';
-            mensagemElemento.textContent = `❌ Ops! O ${perguntaAtual.inimigo} te atacou!`;
-            falar("Resposta errada. Você perdeu vida.");
+            mensagemElemento.textContent = `❌ Ah não! O ${perguntaAtual.inimigo} te acertou! Vamos pedir ajuda ao professor!`;
+            falar("Ops! Resposta errada! Você perdeu um coração! Que tal uma dica?");
         }
         
         if (vidaJogador > 0) {
@@ -477,7 +630,7 @@ function verificarResposta(respostaSelecionada) {
 
     setTimeout(() => {
         verificarFimTurno(true); 
-    }, 1500); 
+    }, 2000); 
 }
 
 
@@ -487,23 +640,25 @@ function verificarFimTurno(turnoFinalizado) {
     if (vidaJogador <= 0) {
         speechSynthesis.cancel();
         document.getElementById('mensagem').className = 'msg-erro';
-        document.getElementById('mensagem').textContent = `GAME OVER! Pontuação: ${pontuacao}. Tente de novo!`;
+        document.getElementById('mensagem').textContent = `FIM DE JOGO, pequeno herói! Pontuação: ${pontuacao}. Não desista! Tente de novo!`;
         document.getElementById('area-pergunta').innerHTML = '<button onclick="mostrarSelecao()">Tentar Novamente</button>'; 
         document.getElementById('inimigo-img').src = IMG_GAME_OVER;
         document.getElementById('jogador-img').src = IMAGENS_HEROI[mundoAtual]; 
-        falar("Fim de jogo. Não desista! Tente de novo.");
+        falar("Ahhh, fim de jogo! Mas você foi muito corajoso! Tente de novo.");
         return;
 
     } 
     
+    // Lógica de avanço para Bosses e inimigos normais
     const inimigoDerrotado = estagio.tipo === 'boss' ? estagio.vidaAtual <= 0 : estagio.data.vida <= 0;
 
     if (inimigoDerrotado) {
+        // Derrotou o Boss ou o Inimigo normal
         estagio.concluido = true;
         
         document.getElementById('mensagem').className = 'msg-acerto';
-        document.getElementById('mensagem').textContent = `🌟 ${perguntaAtual.inimigo} derrotado! Próxima aventura...`;
-        falar(`Inimigo derrotado! Você é demais!`);
+        document.getElementById('mensagem').textContent = `🌟 ${perguntaAtual.inimigo} DERROTADO! Você é demais! Próxima aventura...`;
+        falar(`Vitória! Você venceu esse desafio! Rumo ao próximo!`);
 
         estagioAtualIndex++; 
 
@@ -511,16 +666,26 @@ function verificarFimTurno(turnoFinalizado) {
             if (estagioAtualIndex < estagiosDoMundoAtual.length) {
                 mostrarMapa(); 
             } else {
-                proximaPergunta(); 
+                proximaPergunta(); // Chama a vitória final se for o último
             }
         }, 1500); 
 
-    } 
-    else if (inimigoDerrotado === false && vidaJogador > 0) {
+    } else if (estagio.tipo === 'boss' && estagio.vidaAtual > 0) {
+        // Boss ainda está vivo, mas uma fase (pergunta) foi respondida corretamente
+        document.getElementById('mensagem').className = 'msg-neutra';
+        document.getElementById('mensagem').textContent = "ACERTOU! Boss recua, mas ainda te desafia! Próxima fase!";
+        falar("Excelente! Acerte de novo para acabar com ele!");
+
+        setTimeout(() => {
+            proximaPergunta(); // Continua para a próxima fase (pergunta) do Boss
+        }, 1500);
+        
+    } else if (inimigoDerrotado === false && vidaJogador > 0) {
+        // Inimigo normal não derrotado (ou seja, errou a resposta) - Recarrega a mesma pergunta
         
         document.getElementById('mensagem').className = 'msg-neutra';
-        document.getElementById('mensagem').textContent = "Sua vez! Tente a resposta correta para atacar!";
-        falar("Tente de novo!");
+        document.getElementById('mensagem').textContent = "Sua vez de tentar de novo! Mostre sua força, pequeno herói!";
+        falar("Vamos lá, pequeno herói! Tente de novo!");
 
         const opcoesRespostaDiv = document.getElementById('opcoes-resposta');
         if (opcoesRespostaDiv) {
@@ -545,7 +710,7 @@ function atualizarStatus() {
     if (estagio) {
         if (estagio.tipo === 'boss') {
             vidaInimigoAtual = estagio.vidaAtual;
-            vidaInimigoMax = estagio.vidaMax;
+            vidaInimigoMax = estagio.data.vidaMax; 
         } else {
             vidaInimigoAtual = estagio.data.vida;
             vidaInimigoMax = 1; 
@@ -606,6 +771,24 @@ document.addEventListener('DOMContentLoaded', () => {
         speechSynthesis.onvoiceschanged = () => {
             console.log("Vozes TTS carregadas.");
         };
+    }
+    
+    // Adicionar botão de opções ao menu inicial
+    const menuInicial = document.getElementById('menu-inicial');
+    if (menuInicial) {
+        // Verifica se o botão de opções já existe para não duplicar
+        if (!document.getElementById('btn-opcoes')) {
+             menuInicial.innerHTML += '<button id="btn-opcoes" onclick="mostrarOpcoes()">⚙️ Opções</button>';
+        }
+    }
+
+    // Inicializar a tela de opções (deve estar no HTML)
+    let telaOpcoesDiv = document.getElementById('tela-opcoes');
+    if (!telaOpcoesDiv) {
+        telaOpcoesDiv = document.createElement('div');
+        telaOpcoesDiv.id = 'tela-opcoes';
+        telaOpcoesDiv.className = 'tela';
+        document.body.appendChild(telaOpcoesDiv);
     }
     
     ocultarTodas();
