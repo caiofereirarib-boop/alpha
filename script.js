@@ -25,19 +25,19 @@ let narracaoAlternativasAtiva = false;
 
 // Imagens do Herói (Player)
 const IMAGENS_HEROI = {
-    matematica: "./img/gato.png", 
-    portugues: "./img/gato.png" 
+    matematica: ".img/gato.png", 
+    portugues: ".img/gato.png" 
 };
 // Imagens de Inimigos GENÉRICAS (NOVAS IMAGENS)
-const IMG_MONSTRO_MAT = "./img/inimigo-mat.png"; // Um ícone de número (Matemática)
-const IMG_MONSTRO_PORT = "./img/inimigo-portugues.png"; // Um ícone de livro (Português)
+const IMG_MONSTRO_MAT = ".img/inimigo-mat.png"; // Um ícone de número (Matemática)
+const IMG_MONSTRO_PORT = ".img/inimigo-portugues.png"; // Um ícone de livro (Português)
 
 // Imagens de Fim de Jogo
 const IMG_GAME_OVER = "https://cdn.pixabay.com/photo/2014/12/10/11/17/game-over-562947_1280.png";
 const IMG_VITORIA = "https://cdn.pixabay.com/photo/2016/09/08/11/49/trophy-1654160_1280.png";
 // Professor e Dicas
-const IMG_PROFESSOR_MAT = "./img/macaco.png"; 
-const IMG_PROFESSOR_PORT = "./img/coruja.png"; 
+const IMG_PROFESSOR_MAT = ".img/macaco.png"; 
+const IMG_PROFESSOR_PORT = ".img/coruja.png"; 
 
 // DICAS ANIMADAS E SIMPLES
 const DICAS_PROFESSORES = {
@@ -799,3 +799,4 @@ document.addEventListener('DOMContentLoaded', () => {
         botaoComecar.addEventListener('click', mostrarSelecao);
     }
 });
+
