@@ -10,7 +10,7 @@ let mundoAtual = '';
 let perguntaAtual = {};
 let pontuacao = 0;
 let cronometro;
-const TEMPO_LIMITE = 25; // 25 segundos para responder
+const TEMPO_LIMITE = 30; // 25 segundos para responder
 const PONTOS_POR_ACERTO = 100;
 const PONTOS_POR_BOSS = 300;
 let estagioAtualIndex = 0; 
